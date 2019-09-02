@@ -1,0 +1,11 @@
+*.iml
+.gradle
+local.properties
+.idea/
+WaterMarkAndroid.iml
+app/build
+app/app.iml
+app/.externalNativeBuild
+app/proguard-rules.pro
+app/src/androidTest
+app/src/test
