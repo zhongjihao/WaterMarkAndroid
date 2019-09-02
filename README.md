@@ -1,0 +1,2 @@
+# WaterMarkAndroid
+ Android平台基于freetype和opencv实现视频水印
