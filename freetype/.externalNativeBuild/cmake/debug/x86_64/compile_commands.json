@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/.externalNativeBuild/cmake/debug/x86_64",
+  "command": "/home/zhongjihao/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=x86_64-none-linux-android22 --gcc-toolchain=/home/zhongjihao/Android/Sdk/ndk-bundle/toolchains/x86_64-4.9/prebuilt/linux-x86_64 --sysroot=/home/zhongjihao/Android/Sdk/ndk-bundle/sysroot  -Dfreetype_jni_EXPORTS -I../../../../src/main/jni -isystem /home/zhongjihao/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include -isystem /home/zhongjihao/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++abi/include  -isystem /home/zhongjihao/Android/Sdk/ndk-bundle/sysroot/usr/include/x86_64-linux-android -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -Wa,--noexecstack -Wformat -Werror=format-security -std=c++11  -O0 -fno-limit-debug-info  -fPIC   -o CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o -c /home/zhongjihao/workspace/WaterMarkAndroid/freetype/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp",
+  "file": "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp"
+}
+]

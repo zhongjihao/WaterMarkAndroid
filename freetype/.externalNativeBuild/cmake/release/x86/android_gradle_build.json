@@ -1,0 +1,40 @@
+{
+  "stringTable": {
+    "0": "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/.externalNativeBuild/cmake/release/x86",
+    "1": "--target=i686-none-linux-android22 --gcc-toolchain=/home/zhongjihao/Android/Sdk/ndk-bundle/toolchains/x86-4.9/prebuilt/linux-x86_64 --sysroot=/home/zhongjihao/Android/Sdk/ndk-bundle/sysroot -Dfreetype_jni_EXPORTS -I../../../../src/main/jni -isystem /home/zhongjihao/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include -isystem /home/zhongjihao/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++abi/include -isystem /home/zhongjihao/Android/Sdk/ndk-bundle/sysroot/usr/include/i686-linux-android -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -Wa,--noexecstack -Wformat -Werror=format-security -std=c++11 -O2 -DNDEBUG -fPIC"
+  },
+  "buildFiles": [
+    "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/../../../Android/Sdk/ndk-bundle/build/cmake/android.toolchain.cmake",
+    "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/../../../Android/Sdk/ndk-bundle/build/cmake/platforms.cmake",
+    "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/home/zhongjihao/Android/Sdk/cmake/3.10.2.4988404/bin/cmake --build /home/zhongjihao/workspace/WaterMarkAndroid/freetype/.externalNativeBuild/cmake/release/x86 --target clean"
+  ],
+  "libraries": {
+    "freetype_jni-Release-x86": {
+      "buildCommand": "/home/zhongjihao/Android/Sdk/cmake/3.10.2.4988404/bin/cmake --build /home/zhongjihao/workspace/WaterMarkAndroid/freetype/.externalNativeBuild/cmake/release/x86 --target freetype_jni",
+      "buildType": "release",
+      "toolchain": "2070924084",
+      "abi": "x86",
+      "artifactName": "freetype_jni",
+      "files": [
+        {
+          "src": "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "output": "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/build/intermediates/cmake/release/obj/x86/libfreetype_jni.so"
+    }
+  },
+  "toolchains": {
+    "2070924084": {
+      "cppCompilerExecutable": "/home/zhongjihao/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

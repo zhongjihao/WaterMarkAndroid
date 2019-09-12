@@ -1,0 +1,18 @@
+{
+  "buildFiles": [
+    "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/../../../Android/Sdk/ndk-bundle/build/cmake/android.toolchain.cmake",
+    "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/../../../Android/Sdk/ndk-bundle/build/cmake/platforms.cmake",
+    "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/home/zhongjihao/Android/Sdk/cmake/3.10.2.4988404/bin/cmake --build /home/zhongjihao/workspace/WaterMarkAndroid/freetype/.externalNativeBuild/cmake/release/armeabi-v7a --target clean"
+  ],
+  "libraries": {
+    "freetype_jni-Release-armeabi-v7a": {
+      "artifactName": "freetype_jni",
+      "buildCommand": "/home/zhongjihao/Android/Sdk/cmake/3.10.2.4988404/bin/cmake --build /home/zhongjihao/workspace/WaterMarkAndroid/freetype/.externalNativeBuild/cmake/release/armeabi-v7a --target freetype_jni",
+      "abi": "armeabi-v7a",
+      "output": "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/build/intermediates/cmake/release/obj/armeabi-v7a/libfreetype_jni.so"
+    }
+  }
+}

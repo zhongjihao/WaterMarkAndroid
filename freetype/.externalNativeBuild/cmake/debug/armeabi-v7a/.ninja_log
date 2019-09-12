@@ -1,0 +1,25 @@
+# ninja log v5
+0	24	1567567998	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+24	66	1567567998	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+1	25	1567568383	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+25	47	1567568383	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+0	43	1567568516	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+43	78	1567568516	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+0	23	1567568651	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+23	45	1567568651	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+0	21	1567568843	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+21	42	1567568843	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+0	22	1567576327	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+22	42	1567576327	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+0	26	1567578465	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+26	47	1567578465	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+0	24	1567578976	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+24	46	1567578977	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+0	22	1567579446	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+22	43	1567579446	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+15	523	1567669764	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+523	812	1567669765	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+0	31	1567669900	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+31	54	1567669900	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
+0	36	1567670233	CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o	be976d4abd1ce1b8
+36	99	1567670234	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libfreetype_jni.so	ce94875e78d409f9
