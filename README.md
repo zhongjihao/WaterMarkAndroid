@@ -4,6 +4,7 @@ Android平台基于freetype和opencv实现视频水印
 本工程包括如下部分
 
 1 主工程
+     Camera采集数据并添加水印
 
 2 freetype-2.10.1子工程 \
   1 下载freetype库版本为2.10.1,地址为 \
@@ -30,7 +31,8 @@ Android平台基于freetype和opencv实现视频水印
 	  make -j4 \
 	  make install DESTDIR=$(pwd)
 
-  8 将编译出来的freetype目录拷贝到jni/下
+  8 将编译出来的freetype目录下头文件拷贝到jni/include
+  9 将编译出来的freetype目录下的库文件libfreetype.so拷贝到jni/lib
 	
     
 
@@ -38,6 +40,9 @@ Android平台基于freetype和opencv实现视频水印
   1 下载opencv-3.4.3-android-sdk版本，地址为 \
     https://jaist.dl.sourceforge.net/project/opencvlibrary/opencv-android
 
-  2 解压,将解压后的sdk目录java/src/org全部拷贝到opencv_java子工程java目录下 \
-	同时将sdk目录native/libs全部拷贝到freetype/src/main/libs下
+  2 解压,将解压后的sdk目录java/src/org全部拷贝到opencv_java子工程java目录下
+  
+  3 将sdk/native/libs/armeabi-v7a中的libopencv_java3.so拷贝到子工程freetype/src/main/jni/lib下
+
+  4 将sdk/native/jni/include目录下opencv和opencv2全部拷贝到子工程freetype/src/main/jni/include下
 	

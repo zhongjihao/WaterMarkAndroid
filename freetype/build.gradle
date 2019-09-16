@@ -16,8 +16,6 @@ android {
 
         ndk{
             moduleName "freetype_jni"
-            cFlags "-frtti -fexceptions -std=c++11"
-            stl "gnustl_shared"
             ldLibs "log"
 
             // Specifies the ABI configurations of your native
@@ -29,14 +27,13 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-frtti -fexceptions -std=c++11"
-                //cppFlags "-frtti -fexceptions"
             }
         }
 
         sourceSets {
             main {
                 // 设置Jni so文件路径
-               // jniLibs.srcDirs = ['libs']
+                jniLibs.srcDirs = ['src/main/libs']
                 jni.srcDirs = []
             }
         }
@@ -47,12 +44,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
         }
     }
 

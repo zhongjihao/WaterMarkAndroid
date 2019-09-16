@@ -21,10 +21,6 @@ android {
                 // 设置Jni so文件路径
                 jniLibs.srcDirs = ['src/main/libs']
             }
-
-//            main{
-//                jniLibs.srcDirs 'libs','src/main/libs'
-//            }
         }
     }
     buildTypes {

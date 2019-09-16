@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/.externalNativeBuild/cmake/release/armeabi-v7a",
-  "command": "/home/zhongjihao/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=armv7-none-linux-androideabi22 --gcc-toolchain=/home/zhongjihao/Android/Sdk/ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64 --sysroot=/home/zhongjihao/Android/Sdk/ndk-bundle/sysroot  -Dfreetype_jni_EXPORTS -I../../../../src/main/jni -isystem /home/zhongjihao/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++/include -isystem /home/zhongjihao/Android/Sdk/ndk-bundle/sources/cxx-stl/llvm-libc++abi/include  -isystem /home/zhongjihao/Android/Sdk/ndk-bundle/sysroot/usr/include/arm-linux-androideabi -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb -Wa,--noexecstack -Wformat -Werror=format-security -std=c++11 -frtti -fexceptions -std=c++11 -Oz -DNDEBUG  -fPIC   -o CMakeFiles/freetype_jni.dir/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp.o -c /home/zhongjihao/workspace/WaterMarkAndroid/freetype/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp",
-  "file": "/home/zhongjihao/workspace/WaterMarkAndroid/freetype/src/main/jni/com_sprd_freetype_FreeTypeJni.cpp"
-}
-]
