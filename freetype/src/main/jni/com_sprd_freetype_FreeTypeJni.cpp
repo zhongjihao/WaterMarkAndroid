@@ -9,8 +9,10 @@
 #include "include/CvxText.h"
 #include "log.h"
 #include <string>
+#include <iostream>
 
 using namespace cv;
+using namespace std;
 
 static CvxText *gCvxText = NULL;
 
@@ -64,10 +66,54 @@ JNIEXPORT jboolean JNICALL Java_com_sprd_freetype_FreeTypeJni_setFont
 
 }
 
+JNIEXPORT void JNICALL Java_com_sprd_freetype_FreeTypeJni_getTextSize
+        (JNIEnv *env, jclass jcls, jstring jtext, jint jfontFace, jdouble jfontScale, jint jthickness, jintArray jbaseLine, jdoubleArray joutSize)
+{
+    const char *text = env->GetStringUTFChars(jtext, NULL);
+    std::string input_text(text);
+
+    jint* jbaseLinePtr = env->GetIntArrayElements(jbaseLine, NULL);
+    jdouble* joutSizePtr = env->GetDoubleArrayElements(joutSize, NULL);
+
+    int* pBaseLine = (int*)jbaseLinePtr;
+    double* pOutSize = (double*)joutSizePtr;
+    Size textSize = cv::getTextSize(input_text, (int)jfontFace, (double)jfontScale, (int)jthickness, pBaseLine);
+
+    pOutSize[0] = textSize.width;
+    pOutSize[1] = textSize.height;
+
+    env->ReleaseIntArrayElements(jbaseLine, jbaseLinePtr, 0);
+    env->ReleaseDoubleArrayElements(joutSize, joutSizePtr, 0);
+    env->ReleaseStringUTFChars(jtext, text);
+}
+
+JNIEXPORT void JNICALL Java_com_sprd_freetype_FreeTypeJni_putText
+        (JNIEnv *env, jclass jcls, jlong jimg_nativeObj, jstring jtext, jdouble jorg_x, jdouble jorg_y, jint jfontFace, jdouble jfontScale, jdouble jcolor_val0, jdouble jcolor_val1, jdouble jcolor_val2, jdouble jcolor_val3, jint jthickness)
+{
+    static const char method_name[] = "core::putText()";
+    const char *text = env->GetStringUTFChars(jtext, NULL);
+    try {
+        Mat &img = *((Mat *) jimg_nativeObj);
+        std::string n_text(text ? text : "");
+
+        Point org((int) jorg_x, (int) jorg_y);
+        Scalar color(jcolor_val0, jcolor_val1, jcolor_val2, jcolor_val3);
+
+        cv::putText(img, n_text, org, (int) jfontFace, (double) jfontScale, color,
+                    (int) jthickness);
+    } catch (const std::exception &e) {
+        throwJavaException(env, &e, method_name);
+    } catch (...) {
+        throwJavaException(env, 0, method_name);
+    }
+
+    env->ReleaseStringUTFChars(jtext, text);
+}
+
 JNIEXPORT void JNICALL Java_com_sprd_freetype_FreeTypeJni_putWText
   (JNIEnv *env, jclass jcls, jlong jimg_nativeObj, jstring jtext, jdouble jorg_x, jdouble jorg_y, jint jfontFace, jdouble jfontScale, jdouble jcolor_val0, jdouble jcolor_val1, jdouble jcolor_val2, jdouble jcolor_val3, jint jthickness)
 {
-    static const char method_name[] = "core::putWText()";
+    static const char method_name[] = "freetype::putWText()";
     const char *utf_text = env->GetStringUTFChars(jtext, NULL);
 
     if (gCvxText != NULL) {

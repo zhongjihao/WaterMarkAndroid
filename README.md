@@ -33,6 +33,8 @@ Android平台基于freetype和opencv实现视频水印
 
   8 将编译出来的freetype目录下头文件拷贝到jni/include
   9 将编译出来的freetype目录下的库文件libfreetype.so拷贝到jni/lib
+
+  10 cd jni进入到jni目录下，执行ndk-build
 	
     
 

@@ -17,6 +17,22 @@ JNIEXPORT jboolean JNICALL Java_com_sprd_freetype_FreeTypeJni_setFont
 
 /*
  * Class:     com_sprd_freetype_FreeTypeJni
+ * Method:    getTextSize
+ * Signature: (Ljava/lang/String;IDI[I[D)V
+ */
+JNIEXPORT void JNICALL Java_com_sprd_freetype_FreeTypeJni_getTextSize
+  (JNIEnv *, jclass, jstring, jint, jdouble, jint, jintArray, jdoubleArray);
+
+/*
+ * Class:     com_sprd_freetype_FreeTypeJni
+ * Method:    putText
+ * Signature: (JLjava/lang/String;DDIDDDDDI)V
+ */
+JNIEXPORT void JNICALL Java_com_sprd_freetype_FreeTypeJni_putText
+  (JNIEnv *, jclass, jlong, jstring, jdouble, jdouble, jint, jdouble, jdouble, jdouble, jdouble, jdouble, jint);
+
+/*
+ * Class:     com_sprd_freetype_FreeTypeJni
  * Method:    putWText
  * Signature: (JLjava/lang/String;DDIDDDDDI)V
  */
