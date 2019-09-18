@@ -3,17 +3,32 @@ package com.android.watermark;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.os.Environment;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static android.hardware.Camera.Parameters.FOCUS_MODE_AUTO;
 import static android.hardware.Camera.Parameters.PREVIEW_FPS_MAX_INDEX;
@@ -39,20 +54,25 @@ public class VideoGather {
     private boolean mIsPreviewing = false;
     private CameraPreviewCallback mCameraPreviewCallback;
 
-    private Callback mCallback;
     private CameraOperateCallback cameraCb;
     private Context mContext;
+    private AtomicBoolean mIsCaptrue = new AtomicBoolean(false);
+
+
+    private Cache<Long, byte[]> mDataCaches = CacheBuilder.newBuilder().concurrencyLevel(2)
+            .maximumSize(1000)
+            .expireAfterWrite(10000, TimeUnit.MILLISECONDS)
+            .removalListener(new RemovalListener<Long, byte[]>() {
+                @Override
+                public void onRemoval(RemovalNotification<Long, byte[]> item) {
+                }
+            }).build();
 
     private VideoGather() {
     }
 
     public interface CameraOperateCallback {
         public void cameraHasOpened();
-        public void cameraHasPreview(int width,int height,int fps);
-    }
-
-    public interface Callback {
-        public void videoData(byte[] data);
     }
 
     public static VideoGather getInstance() {
@@ -64,10 +84,6 @@ public class VideoGather {
             }
         }
         return mCameraWrapper;
-    }
-
-    public void setCallback(Callback callback) {
-        mCallback = callback;
     }
 
     public void doOpenCamera(CameraOperateCallback callback) {
@@ -92,17 +108,16 @@ public class VideoGather {
         }
         mContext = activity;
         setCameraDisplayOrientation(activity, Camera.CameraInfo.CAMERA_FACING_BACK);
-        setCameraParamter();
+        setCameraParamter(surfaceHolder);
         try {
             // 通过SurfaceView显示取景画面
             mCamera.setPreviewDisplay(surfaceHolder);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Log.d(TAG, "=====zhongjihao===Camera Preview Started...");
         mCamera.startPreview();
         mIsPreviewing = true;
-        Log.d(TAG, "=====zhongjihao===Camera Preview Started...");
-        cameraCb.cameraHasPreview(preWidth,preHeight,frameRate);
     }
 
     public void doStopCamera() {
@@ -120,7 +135,7 @@ public class VideoGather {
         mContext = null;
     }
 
-    private void setCameraParamter() {
+    private void setCameraParamter(SurfaceHolder surfaceHolder) {
         if (!mIsPreviewing && mCamera != null) {
             mCameraParamters = mCamera.getParameters();
             mCameraParamters.setPreviewFormat(ImageFormat.NV21);
@@ -169,6 +184,7 @@ public class VideoGather {
             Log.d(TAG, "=====zhongjihao=====setParameters====defminFps:" + defminFps+"    defmaxFps: "+defmaxFps);
             mCameraParamters.setPreviewFpsRange(defminFps,defmaxFps);
             frameRate = defmaxFps / 1000;
+            surfaceHolder.setFixedSize(previewSize.width, previewSize.height);
             mCameraPreviewCallback = new CameraPreviewCallback();
             mCamera.addCallbackBuffer(new byte[previewSize.width * previewSize.height*3/2]);
             mCamera.setPreviewCallbackWithBuffer(mCameraPreviewCallback);
@@ -215,6 +231,66 @@ public class VideoGather {
         mCamera.setDisplayOrientation(result);
     }
 
+    public void takePicture(PictureCallback mJpegCallback){
+        mIsCaptrue.set(true);
+        ConcurrentMap<Long, byte[]> map = mDataCaches.asMap();
+        if (!map.isEmpty()) {
+            Set<Long> keySet = map.keySet();
+            long lastYuvTime = 0;
+            for (Long key : keySet) {
+                if (lastYuvTime < key)
+                    lastYuvTime = key;
+            }
+
+            byte[] data = map.get(lastYuvTime);
+            String filename = FileUtil.getPicFileName(System.currentTimeMillis());
+            Log.d(TAG, "takePicture------->filename: " + filename+" ,width: "+previewSize.width+" ,height: "+previewSize.height);
+            takePictureInternal(mJpegCallback,filename, data);
+        }else {
+            Log.e(TAG, "takePicture------data Cache is empty!");
+        }
+        mIsCaptrue.set(false);
+    }
+
+    private void takePictureInternal(PictureCallback mJpegCallback,String fileName,byte[] data){
+        String filePath = Environment
+                .getExternalStorageDirectory()
+                + "/"+"watermark_android";
+
+        File photoDir = new File(filePath);
+        boolean isSdcardOk = true;
+        if (!photoDir.exists()) {
+            isSdcardOk = photoDir.mkdirs();
+        }
+
+        if (isSdcardOk) {
+            File pictureFile = new File(filePath, fileName);
+            if (!pictureFile.exists()) {
+                FileOutputStream filecon = null;
+                try {
+                    pictureFile.createNewFile();
+                    filecon = new FileOutputStream(pictureFile);
+                    YuvImage image = new YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null);
+                    image.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 80, filecon);
+                    Log.d(TAG,"filePath: "+pictureFile.getAbsolutePath());
+                    if (mJpegCallback != null) {
+                        mJpegCallback.onPictureTaken(pictureFile.getAbsolutePath());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (filecon != null) {
+                        try {
+                            filecon.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     class CameraPreviewCallback implements Camera.PreviewCallback {
         private CameraPreviewCallback() {
 
@@ -222,10 +298,13 @@ public class VideoGather {
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
+            Camera.Size size = camera.getParameters().getPreviewSize();
+
             //通过回调,拿到的data数据是原始数据
             if(data != null){
-                if(mCallback != null)
-                    mCallback.videoData(data);
+                if(!mIsCaptrue.get()){
+                    mDataCaches.put(SystemClock.elapsedRealtime(),data);
+                }
                 camera.addCallbackBuffer(data);
             }
             else {
