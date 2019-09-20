@@ -152,6 +152,79 @@ JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_yuvAddWaterMark
     env->ReleaseByteArrayElements(jyuvData, jyuv, 0);
 }
 
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ClockWiseRotate90
+        (JNIEnv *env, jclass jcls __unused, jlong jcPtr, jbyteArray jsrcNv21, jint jsrcWidth, jint jsrcHeight, jbyteArray joutData, jintArray joutWidth, jintArray joutHeight)
+{
+    jbyte* jsrcNv21Byte = env->GetByteArrayElements(jsrcNv21, NULL);
+    jbyte* joutDataByte = env->GetByteArrayElements(joutData, NULL);
+
+    jint* joutWidthInt = env->GetIntArrayElements(joutWidth, NULL);
+    jint* joutHeightInt = env->GetIntArrayElements(joutHeight, NULL);
+
+    int* poutWidth = (int*)joutWidthInt;
+    int* poutHeight = (int*)joutHeightInt;
+
+    unsigned char* pSrcNv21 = (unsigned char*)jsrcNv21Byte;
+    unsigned char* pOutData = (unsigned char*)joutDataByte;
+
+    WaterMark* pYuvWater = reinterpret_cast<WaterMark*> (jcPtr);
+    pYuvWater->Nv21ClockWiseRotate90(pSrcNv21,(int)jsrcWidth,(int)jsrcHeight,pOutData,poutWidth, poutHeight);
+
+    LOGD("%s: outWidth: %d,outHeight:%d",__FUNCTION__,*poutWidth,*poutHeight);
+    env->ReleaseIntArrayElements(joutWidth, joutWidthInt, 0);
+    env->ReleaseIntArrayElements(joutHeight, joutHeightInt, 0);
+    env->ReleaseByteArrayElements(jsrcNv21, jsrcNv21Byte, 0);
+    env->ReleaseByteArrayElements(joutData, joutDataByte, 0);
+}
+
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ClockWiseRotate180
+        (JNIEnv *env, jclass jcls __unused, jlong jcPtr, jbyteArray jsrcNv21, jint jsrcWidth, jint jsrcHeight, jbyteArray joutData, jintArray joutWidth, jintArray joutHeight)
+{
+    jbyte* jsrcNv21Byte = env->GetByteArrayElements(jsrcNv21, NULL);
+    jbyte* joutDataByte = env->GetByteArrayElements(joutData, NULL);
+
+    jint* joutWidthInt = env->GetIntArrayElements(joutWidth, NULL);
+    jint* joutHeightInt = env->GetIntArrayElements(joutHeight, NULL);
+
+    int* poutWidth = (int*)joutWidthInt;
+    int* poutHeight = (int*)joutHeightInt;
+
+    unsigned char* pSrcNv21 = (unsigned char*)jsrcNv21Byte;
+    unsigned char* pOutData = (unsigned char*)joutDataByte;
+
+    WaterMark* pYuvWater = reinterpret_cast<WaterMark*> (jcPtr);
+    pYuvWater->Nv21ClockWiseRotate180(pSrcNv21,(int)jsrcWidth,(int)jsrcHeight,pOutData,poutWidth, poutHeight);
+
+    env->ReleaseIntArrayElements(joutWidth, joutWidthInt, 0);
+    env->ReleaseIntArrayElements(joutHeight, joutHeightInt, 0);
+    env->ReleaseByteArrayElements(jsrcNv21, jsrcNv21Byte, 0);
+    env->ReleaseByteArrayElements(joutData, joutDataByte, 0);
+}
+
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ClockWiseRotate270
+        (JNIEnv *env, jclass jcls __unused, jlong jcPtr, jbyteArray jsrcNv21, jint jsrcWidth, jint jsrcHeight, jbyteArray joutData, jintArray joutWidth, jintArray joutHeight)
+{
+    jbyte* jsrcNv21Byte = env->GetByteArrayElements(jsrcNv21, NULL);
+    jbyte* joutDataByte = env->GetByteArrayElements(joutData, NULL);
+
+    jint* joutWidthInt = env->GetIntArrayElements(joutWidth, NULL);
+    jint* joutHeightInt = env->GetIntArrayElements(joutHeight, NULL);
+
+    int* poutWidth = (int*)joutWidthInt;
+    int* poutHeight = (int*)joutHeightInt;
+
+    unsigned char* pSrcNv21 = (unsigned char*)jsrcNv21Byte;
+    unsigned char* pOutData = (unsigned char*)joutDataByte;
+
+    WaterMark* pYuvWater = reinterpret_cast<WaterMark*> (jcPtr);
+    pYuvWater->Nv21ClockWiseRotate270(pSrcNv21,(int)jsrcWidth,(int)jsrcHeight,pOutData,poutWidth, poutHeight);
+
+    env->ReleaseIntArrayElements(joutWidth, joutWidthInt, 0);
+    env->ReleaseIntArrayElements(joutHeight, joutHeightInt, 0);
+    env->ReleaseByteArrayElements(jsrcNv21, jsrcNv21Byte, 0);
+    env->ReleaseByteArrayElements(joutData, joutDataByte, 0);
+}
+
 JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_stopWaterMarkEngine
   (JNIEnv * env, jclass jcls __unused, jlong jcPtr)
 {

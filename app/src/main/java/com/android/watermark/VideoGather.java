@@ -59,12 +59,12 @@ public class VideoGather {
     private AtomicBoolean mIsCaptrue = new AtomicBoolean(false);
 
 
-    private Cache<Long, byte[]> mDataCaches = CacheBuilder.newBuilder().concurrencyLevel(2)
+    private Cache<Long, Frame> mDataCaches = CacheBuilder.newBuilder().concurrencyLevel(2)
             .maximumSize(1000)
             .expireAfterWrite(10000, TimeUnit.MILLISECONDS)
-            .removalListener(new RemovalListener<Long, byte[]>() {
+            .removalListener(new RemovalListener<Long, Frame>() {
                 @Override
-                public void onRemoval(RemovalNotification<Long, byte[]> item) {
+                public void onRemoval(RemovalNotification<Long, Frame> item) {
                 }
             }).build();
 
@@ -118,6 +118,12 @@ public class VideoGather {
         Log.d(TAG, "=====zhongjihao===Camera Preview Started...");
         mCamera.startPreview();
         mIsPreviewing = true;
+        mCamera.autoFocus(new Camera.AutoFocusCallback() {
+            @Override
+            public void onAutoFocus(boolean success, Camera camera) {
+                Log.d(TAG, "=====zhongjihao===onAutoFocus----->success: "+success);
+            }
+        });
     }
 
     public void doStopCamera() {
@@ -138,10 +144,15 @@ public class VideoGather {
     private void setCameraParamter(SurfaceHolder surfaceHolder) {
         if (!mIsPreviewing && mCamera != null) {
             mCameraParamters = mCamera.getParameters();
+            List<Integer> previewFormats = mCameraParamters.getSupportedPreviewFormats();
+            for(int i=0;i<previewFormats.size();i++){
+                Log.d(TAG,"support preview format : "+previewFormats.get(i));
+            }
+
             mCameraParamters.setPreviewFormat(ImageFormat.NV21);
-            mCameraParamters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            mCameraParamters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-            mCameraParamters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
+//            mCameraParamters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+//            mCameraParamters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
+//            mCameraParamters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
             // Set preview size.
             List<Camera.Size> supportedPreviewSizes = mCameraParamters.getSupportedPreviewSizes();
             Collections.sort(supportedPreviewSizes, new Comparator<Camera.Size>() {
@@ -167,7 +178,6 @@ public class VideoGather {
             preWidth = previewSize.width;
             preHeight = previewSize.height;
             mCameraParamters.setPreviewSize(previewSize.width, previewSize.height);
-            mCameraParamters.setFocusMode(FOCUS_MODE_AUTO);
 
             //set fps range.
             int defminFps = 0;
@@ -188,11 +198,18 @@ public class VideoGather {
             mCameraPreviewCallback = new CameraPreviewCallback();
             mCamera.addCallbackBuffer(new byte[previewSize.width * previewSize.height*3/2]);
             mCamera.setPreviewCallbackWithBuffer(mCameraPreviewCallback);
-//            List<String> focusModes = parameters.getSupportedFocusModes();
-//            if (focusModes.contains("continuous-video")) {
-//                parameters
-//                        .setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-//            }
+            List<String> focusModes = mCameraParamters.getSupportedFocusModes();
+
+            for (String focusMode : focusModes){//检查支持的对焦
+                Log.d(TAG, "=====zhongjihao=====setParameters====focusMode:" + focusMode);
+                if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)){
+                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+                }else if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)){
+                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                }else if(focusMode.contains(Camera.Parameters.FOCUS_MODE_AUTO)){
+                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                }
+            }
             Log.d(TAG, "=====zhongjihao=====setParameters====preWidth:" + preWidth+"   preHeight: "+preHeight+"  frameRate: "+frameRate);
             mCamera.setParameters(mCameraParamters);
         }
@@ -233,7 +250,7 @@ public class VideoGather {
 
     public void takePicture(PictureCallback mJpegCallback){
         mIsCaptrue.set(true);
-        ConcurrentMap<Long, byte[]> map = mDataCaches.asMap();
+        ConcurrentMap<Long, Frame> map = mDataCaches.asMap();
         if (!map.isEmpty()) {
             Set<Long> keySet = map.keySet();
             long lastYuvTime = 0;
@@ -242,17 +259,18 @@ public class VideoGather {
                     lastYuvTime = key;
             }
 
-            byte[] data = map.get(lastYuvTime);
+            Frame frame = map.get(lastYuvTime);
             String filename = FileUtil.getPicFileName(System.currentTimeMillis());
             Log.d(TAG, "takePicture------->filename: " + filename+" ,width: "+previewSize.width+" ,height: "+previewSize.height);
-            takePictureInternal(mJpegCallback,filename, data);
+            takePictureInternal(mJpegCallback,filename, frame.nv21,frame.width,frame.height);
         }else {
             Log.e(TAG, "takePicture------data Cache is empty!");
         }
         mIsCaptrue.set(false);
     }
 
-    private void takePictureInternal(PictureCallback mJpegCallback,String fileName,byte[] data){
+    private void takePictureInternal(PictureCallback mJpegCallback,String fileName,byte[] data,int width,int height){
+        Log.d(TAG, "takePictureInternal------->fileName: " + fileName+" ,width: "+width+" ,height: "+height);
         String filePath = Environment
                 .getExternalStorageDirectory()
                 + "/"+"watermark_android";
@@ -270,7 +288,12 @@ public class VideoGather {
                 try {
                     pictureFile.createNewFile();
                     filecon = new FileOutputStream(pictureFile);
-                    YuvImage image = new YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null);
+                    byte[] yuv = new byte[width*height*3/2];
+                    int[] outWidth = new int[1];
+                    int[] outHeight = new int[1];
+                    WaterMarkWrap.newInstance().Nv21ClockWiseRotate90(data,width,height,yuv,outWidth,outHeight);
+                    Log.d(TAG,"takePictureInternal---->outWidth: "+outWidth[0]+" ,outHeight: "+outHeight[0]);
+                    YuvImage image = new YuvImage(yuv, ImageFormat.NV21, outWidth[0], outHeight[0],null);
                     image.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 80, filecon);
                     Log.d(TAG,"filePath: "+pictureFile.getAbsolutePath());
                     if (mJpegCallback != null) {
@@ -291,6 +314,30 @@ public class VideoGather {
         }
     }
 
+    private static class Frame{
+        byte[] nv21;
+        int width;
+        int height;
+
+        public Frame(byte[] nv21, int width, int height) {
+            this.nv21 = nv21;
+            this.width = width;
+            this.height = height;
+        }
+
+        public byte[] getNv21() {
+            return nv21;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+    }
+
     class CameraPreviewCallback implements Camera.PreviewCallback {
         private CameraPreviewCallback() {
 
@@ -299,16 +346,17 @@ public class VideoGather {
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
             Camera.Size size = camera.getParameters().getPreviewSize();
+            Log.d(TAG,"onPreviewFrame----->width: "+size.width+" ,height: "+size.height);
 
             //通过回调,拿到的data数据是原始数据
             if(data != null){
                 if(!mIsCaptrue.get()){
-                    mDataCaches.put(SystemClock.elapsedRealtime(),data);
+                    mDataCaches.put(SystemClock.elapsedRealtime(),new Frame(data,size.width,size.height));
                 }
                 camera.addCallbackBuffer(data);
             }
             else {
-                camera.addCallbackBuffer(new byte[previewSize.width * previewSize.height *3/2]);
+                camera.addCallbackBuffer(new byte[size.width * size.height *3/2]);
             }
         }
     }

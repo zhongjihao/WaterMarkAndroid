@@ -124,6 +124,51 @@ public class WaterMarkWrap {
         }
     }
 
+    /**
+     * Nv21顺时针旋转90度
+     * pNv21     原nv21数据
+     * srcWidth  原nv21对应的宽
+     * srcHeight 原nv21对应的高
+     * outData   旋转后的nv21数据
+     * outWidth  旋转后对应的宽
+     * outHeight 旋转后对应的高
+     */
+    public void Nv21ClockWiseRotate90(byte[] pNv21,int srcWidth,int srcHeight,byte[] outData,int[] outWidth,int[] outHeight){
+        if (cPtr != 0) {
+            WaterMarkJni.Nv21ClockWiseRotate90(cPtr, pNv21, srcWidth, srcHeight,outData,outWidth,outHeight);
+        }
+    }
+
+    /**
+     * Nv21顺时针旋转180度
+     * pNv21     原nv21数据
+     * srcWidth  原nv21对应的宽
+     * srcHeight 原nv21对应的高
+     * outData   旋转后的nv21数据
+     * outWidth  旋转后对应的宽
+     * outHeight 旋转后对应的高
+     */
+    public void Nv21ClockWiseRotate180(byte[] pNv21,int srcWidth,int srcHeight,byte[] outData,int[] outWidth,int[] outHeight){
+        if (cPtr != 0) {
+            WaterMarkJni.Nv21ClockWiseRotate180(cPtr, pNv21, srcWidth, srcHeight,outData,outWidth,outHeight);
+        }
+    }
+
+    /**
+     * Nv21顺时针旋转270度
+     * pNv21     原nv21数据
+     * srcWidth  原nv21对应的宽
+     * srcHeight 原nv21对应的高
+     * outData   旋转后的nv21数据
+     * outWidth  旋转后对应的宽
+     * outHeight 旋转后对应的高
+     */
+    public void Nv21ClockWiseRotate270(byte[] pNv21,int srcWidth,int srcHeight,byte[] outData,int[] outWidth,int[] outHeight){
+        if (cPtr != 0) {
+            WaterMarkJni.Nv21ClockWiseRotate270(cPtr, pNv21, srcWidth, srcHeight,outData,outWidth,outHeight);
+        }
+    }
+
     //停止yuv引擎
     public void stopWaterMarkEngine() {
         if (cPtr != 0) {

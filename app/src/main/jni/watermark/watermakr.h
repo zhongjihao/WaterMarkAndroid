@@ -104,6 +104,39 @@ public:
      **/
     void yuvAddWaterMark(int yuvType, int startX, int startY, unsigned char *waterMarkData,
                          int waterMarkW, int waterMarkH, unsigned char *yuvData, int yuvW, int yuvH);
+
+    /**
+     * Nv21顺时针旋转90度
+     * pNv21     原nv21数据
+     * srcWidth  原nv21对应的宽
+     * srcHeight 原nv21对应的高
+     * outData   旋转后的nv21数据
+     * outWidth  旋转后对应的宽
+     * outHeight 旋转后对应的高
+     */
+    void Nv21ClockWiseRotate90(unsigned char* pNv21,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight);
+
+    /**
+    * Nv21顺时针旋转180度
+    * pNv21     原nv21数据
+    * srcWidth  原nv21对应的宽
+    * srcHeight 原nv21对应的高
+    * outData   旋转后的nv21数据
+    * outWidth  旋转后对应的宽
+    * outHeight 旋转后对应的高
+    */
+    void Nv21ClockWiseRotate180(unsigned char* pNv21,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight);
+
+    /**
+    * Nv21顺时针旋转270度
+    * pNv21     原nv21数据
+    * srcWidth  原nv21对应的宽
+    * srcHeight 原nv21对应的高
+    * outData   旋转后的nv21数据
+    * outWidth  旋转后对应的宽
+    * outHeight 旋转后对应的高
+    */
+    void Nv21ClockWiseRotate270(unsigned char* pNv21,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight);
 };
 
 

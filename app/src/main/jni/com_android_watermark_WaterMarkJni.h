@@ -89,6 +89,30 @@ JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_yuvAddWaterMark
 
 /*
  * Class:     com_android_watermark_WaterMarkJni
+ * Method:    Nv21ClockWiseRotate90
+ * Signature: (J[BII[B[I[I)V
+ */
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ClockWiseRotate90
+  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint, jbyteArray, jintArray, jintArray);
+
+/*
+ * Class:     com_android_watermark_WaterMarkJni
+ * Method:    Nv21ClockWiseRotate180
+ * Signature: (J[BII[B[I[I)V
+ */
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ClockWiseRotate180
+  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint, jbyteArray, jintArray, jintArray);
+
+/*
+ * Class:     com_android_watermark_WaterMarkJni
+ * Method:    Nv21ClockWiseRotate270
+ * Signature: (J[BII[B[I[I)V
+ */
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ClockWiseRotate270
+  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint, jbyteArray, jintArray, jintArray);
+
+/*
+ * Class:     com_android_watermark_WaterMarkJni
  * Method:    stopWaterMarkEngine
  * Signature: (J)V
  */

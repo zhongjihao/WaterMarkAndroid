@@ -19,5 +19,8 @@ public class WaterMarkJni {
     public native static void getSpecYuvBuffer(long cPtr,int yuvType,byte[] dstBuf, byte[] srcYuv, int srcW, int srcH,int dirty_Y,int dirty_UV);
     public native static void yuvAddWaterMark(long cPtr,int yuvType, int startX, int startY, byte[] waterMarkData,
                                               int waterMarkW, int waterMarkH,byte[] yuvData, int yuvW, int yuvH);
+    public native static void Nv21ClockWiseRotate90(long cPtr,byte[] pNv21,int srcWidth,int srcHeight,byte[] outData,int[] outWidth,int[] outHeight);
+    public native static void Nv21ClockWiseRotate180(long cPtr,byte[] pNv21,int srcWidth,int srcHeight,byte[] outData,int[] outWidth,int[] outHeight);
+    public native static void Nv21ClockWiseRotate270(long cPtr,byte[] pNv21,int srcWidth,int srcHeight,byte[] outData,int[] outWidth,int[] outHeight);
     public native static void stopWaterMarkEngine(long cPtr);
 }

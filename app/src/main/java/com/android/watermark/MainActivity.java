@@ -74,12 +74,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         permissions, TARGET_PERMISSION_REQUEST);
             }
         }
+
+        WaterMarkWrap.newInstance().startWaterMarkEngine();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         VideoGather.getInstance().doStopCamera();
+        WaterMarkWrap.newInstance().stopWaterMarkEngine();
     }
 
     @Override

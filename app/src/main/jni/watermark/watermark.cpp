@@ -519,5 +519,87 @@ void WaterMark::yuvAddWaterMark(int yuvType, int startX, int startY, unsigned ch
     }
 }
 
+void WaterMark::Nv21ClockWiseRotate90(unsigned char* pNv21,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight)
+{
+    if(pNv21 == NULL || outData == NULL){
+        LOGE("%s: pNv21 is null or outData is null",__FUNCTION__);
+        return;
+    }
+
+    // Rotate the Y luma
+    int i =0;
+    for(int x =0;x < srcWidth;x++){
+        for(int y = srcHeight-1;y >=0;y--){
+            outData[i]= pNv21[y*srcWidth+x];
+            i++;
+        }
+    }
+
+    // Rotate the U and V color components
+    i = srcWidth*srcHeight*3/2-1;
+    for(int x = srcWidth-1;x >0;x=x-2){
+        for(int y =0;y < srcHeight/2;y++){
+            outData[i]= pNv21[(srcWidth*srcHeight)+(y*srcWidth)+x];
+            i--;
+            outData[i]= pNv21[(srcWidth*srcHeight)+(y*srcWidth)+(x-1)];
+            i--;
+        }
+    }
+
+    *outWidth = srcHeight;
+    *outHeight = srcWidth;
+    LOGD("%s: outWidth: %d,outHeight:%d",__FUNCTION__,*outWidth,*outHeight);
+}
+
+void WaterMark::Nv21ClockWiseRotate180(unsigned char* pNv21,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight)
+{
+    if(pNv21 == NULL || outData == NULL){
+        LOGE("%s: pNv21 is null or outData is null",__FUNCTION__);
+        return;
+    }
+
+    int i = 0;
+    int count = 0;
+    for (i = srcWidth * srcHeight - 1; i >= 0; i--) {
+        outData[count] = pNv21[i];
+        count++;
+    }
+
+    i = srcWidth * srcHeight * 3 / 2 - 1;
+    for (i = srcWidth * srcHeight * 3 / 2 - 1; i >= srcWidth * srcHeight; i -= 2) {
+        outData[count++] = pNv21[i - 1];
+        outData[count++] = pNv21[i];
+    }
+
+    *outWidth = srcWidth;
+    *outHeight = srcHeight;
+}
+
+void WaterMark::Nv21ClockWiseRotate270(unsigned char* pNv21,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight)
+{
+    // Rotate the Y luma
+    int i = 0;
+    for (int x = srcWidth - 1; x >= 0; x--) {
+        for (int y = 0; y < srcHeight; y++) {
+            outData[i] = pNv21[y * srcWidth + x];
+            i++;
+        }
+    }
+
+    // Rotate the U and V color components
+    i = srcWidth * srcHeight;
+    for (int x = srcWidth - 1; x > 0; x = x - 2) {
+        for (int y = 0; y < srcHeight / 2; y++) {
+            outData[i] = pNv21[(srcWidth * srcHeight) + (y * srcWidth) + (x - 1)];
+            i++;
+            outData[i] = pNv21[(srcWidth * srcHeight) + (y * srcWidth) + x];
+            i++;
+        }
+    }
+
+    *outWidth = srcHeight;
+    *outHeight = srcWidth;
+}
+
 
 
