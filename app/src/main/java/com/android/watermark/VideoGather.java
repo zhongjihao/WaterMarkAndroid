@@ -7,7 +7,11 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
@@ -68,7 +72,17 @@ public class VideoGather {
                 }
             }).build();
 
+    private WaterMark.WaterMarkInfo mWaterMarkInfo = null;
+    private HandlerThread mHandlerThread;
+    private Handler mHandler;
+    private final static int MSG_WATER_MAKR = 1;
+
     private VideoGather() {
+        mWaterMarkInfo = new WaterMark.WaterMarkInfo();
+        mHandlerThread = new HandlerThread( "WaterMarkthread");
+        //开启一个线程
+        mHandlerThread.start();
+        mHandler = new Handler(mHandlerThread.getLooper(),mCallback);
     }
 
     public interface CameraOperateCallback {
@@ -124,6 +138,21 @@ public class VideoGather {
                 Log.d(TAG, "=====zhongjihao===onAutoFocus----->success: "+success);
             }
         });
+
+        new CopyAssetsTask(mContext).execute(new CopyAssetsTask.IWaterMarkReadyNotify(){
+            @Override
+            public void OnReady(){
+                if (mWaterMarkInfo != null) {
+                    Log.d(TAG,"WaterMark Ready");
+                    mWaterMarkInfo.onReady();
+                }
+                if (mHandler.hasMessages(MSG_WATER_MAKR)){
+                    mHandler.removeMessages(MSG_WATER_MAKR);
+                }
+                Message message = mHandler.obtainMessage(MSG_WATER_MAKR);
+                mHandler.sendMessageDelayed(message, 1000);
+            }
+        });
     }
 
     public void doStopCamera() {
@@ -139,6 +168,10 @@ public class VideoGather {
             mCamera = null;
         }
         mContext = null;
+        if(mHandlerThread != null){
+            mHandlerThread.quitSafely();
+            mHandlerThread = null;
+        }
     }
 
     private void setCameraParamter(SurfaceHolder surfaceHolder) {
@@ -351,6 +384,18 @@ public class VideoGather {
             //通过回调,拿到的data数据是原始数据
             if(data != null){
                 if(!mIsCaptrue.get()){
+
+                    synchronized (mWaterMarkInfo) {
+                        if (mWaterMarkInfo != null) {
+//                            try {
+//                                mWaterMarkInfo.drawWaterMark(frontFrameByteBuffer, Constant.FRONT_RECORD_WIDTH, Constant.FRONT_RECORD_HEIGHT);
+//                            } catch (Exception ex) {
+//                                ex.printStackTrace();
+//                                Log.e(TAG, "adas draw watermark exception", ex);
+//                            }
+                        }
+                    }
+
                     mDataCaches.put(SystemClock.elapsedRealtime(),new Frame(data,size.width,size.height));
                 }
                 camera.addCallbackBuffer(data);
@@ -360,5 +405,30 @@ public class VideoGather {
             }
         }
     }
+
+    private Handler.Callback mCallback = new Handler.Callback() {
+        public boolean handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_WATER_MAKR:{
+                    if (mHandler.hasMessages(MSG_WATER_MAKR)){
+                        mHandler.removeMessages(MSG_WATER_MAKR);
+                    }
+
+                    synchronized (mWaterMarkInfo) {
+                        if (mWaterMarkInfo != null){
+                            //Log.d(TAG,"mAdasWaterMarkInfo: "+mAdasWaterMarkInfo);
+                            mWaterMarkInfo.onTimeChanged(TimeUtil.getCurrentTime(TimeUtil.TIME_FORMAT_WATERMARK_DISPLAY));
+                            mWaterMarkInfo.onLocationChanged("广东深圳");
+                        }
+                    }
+
+                    Message message = mHandler.obtainMessage(MSG_WATER_MAKR);
+                    mHandler.sendMessageDelayed(message, 1000);
+                    break;
+                }
+            }
+            return true;
+        }
+    };
 
 }

@@ -33,7 +33,7 @@ public class WaterMark {
     private static final int WATER_MARK_CONTENT_LEN_MAX = 40;
     public static final int TURN_FLAG_NONE = 0x00;
     private static boolean isDebug = true;
-    public static final String TIME_FORMAT_WATERMARK_DISPLAY = "yyyy/MM/dd HH:mm:ss";
+
     private static final int IMAGE_TYPE_I420 = 1;
     private static final int IMAGE_TYPE_NV21 = 2;
     private static final int IMAGE_TYPE = IMAGE_TYPE_I420;
@@ -66,20 +66,9 @@ public class WaterMark {
         }
     }
 
-    public static String getCurrentTime(final String format) {
-        SimpleDateFormat formatter = new SimpleDateFormat(format);
-
-        return formatter.format(Calendar.getInstance().getTime());
-    }
-
     public static class WaterMarkInfo {
 
         private boolean mReady = false;
-
-        private boolean mBrake = false;
-        private int mTurnFlag = TURN_FLAG_NONE;
-        private int mSpeed = 0;
-        private WaterMarkData mWatermarkCarInfo;
 
         private String mTime = null;
         private WaterMarkData mWatermarkTime;
@@ -87,11 +76,11 @@ public class WaterMark {
         private String mAddress = null;
         private WaterMarkData mWatermarkLocation = null;
 
-        private String mPlateNumber = "";
+
         private static final Scalar TEXT_COLOR = new Scalar(255.0D, 255.0D, 0.0D);// RGB
 
         public WaterMarkInfo() {
-            mTime = getCurrentTime(TIME_FORMAT_WATERMARK_DISPLAY);
+            mTime = TimeUtil.getCurrentTime(TimeUtil.TIME_FORMAT_WATERMARK_DISPLAY);
         }
 
         public void onReady() {
@@ -135,7 +124,7 @@ public class WaterMark {
                 if(IMAGE_TYPE == IMAGE_TYPE_I420){
                     ret = i420AddWaterMark(markX, markY, mWatermarkLocation.mI420Data, mWatermarkLocation.mWidth,
                             mWatermarkLocation.mHeight, frame, frameWidth, frameHeight);
-                }else{
+                }else if(IMAGE_TYPE == IMAGE_TYPE_NV21){
                     ret = nv21AddWaterMark(markX, markY, mWatermarkLocation.mI420Data, mWatermarkLocation.mWidth,
                             mWatermarkLocation.mHeight, frame, frameWidth, frameHeight);
                 }
@@ -156,18 +145,6 @@ public class WaterMark {
                 if(isDebug){
                     // Log.d(TAG,"drawWaterMark--------------------------------------------------"+ret);
                 }
-            }
-
-            if (mWatermarkCarInfo != null) {
-                if(IMAGE_TYPE == IMAGE_TYPE_I420){
-                    ret = i420AddWaterMark(markX, markY, mWatermarkCarInfo.mI420Data, mWatermarkCarInfo.mWidth,
-                            mWatermarkCarInfo.mHeight, frame, frameWidth, frameHeight);
-                }else{
-                    ret = nv21AddWaterMark(markX, markY, mWatermarkCarInfo.mI420Data, mWatermarkCarInfo.mWidth,
-                            mWatermarkCarInfo.mHeight, frame, frameWidth, frameHeight);
-                }
-                if (ret)
-                    markY += WATER_MARK_HEIGHT_MIN;
             }
 
             return frame;
