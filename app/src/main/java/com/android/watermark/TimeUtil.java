@@ -9,6 +9,6 @@ public class TimeUtil {
     public static String getCurrentTime(final String format) {
         SimpleDateFormat formatter = new SimpleDateFormat(format);
 
-        return formatter.format(Calendar.getInstance().getTime());
+        return "北京时间: "+formatter.format(Calendar.getInstance().getTime());
     }
 }

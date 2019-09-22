@@ -163,25 +163,25 @@ int CvxText::putText(IplImage *img, const char* text, CvPoint pos, CvScalar colo
         return -1;
 
     int i;
-//    for (i = 0; text[i] != '\0';) {
-//        int wc = text[i];
-//
-//        if (!isascii(wc)) {
-//            mbtowc(reinterpret_cast<wchar_t *>(&wc), &text[i], 3);
-//            i += 3;
-//        } else {
-//            i++;
-//        }
-//
-//        putWChar(img, wc, pos, color);
-//    }
+    for (i = 0; text[i] != '\0';) {
+        int wc = text[i];
 
-      for (i = 0; text[i] != '\0';++i) {
-           wchar_t wc = text[i];
-           if(!isascii(wc)) mbtowc(&wc, &text[i++], 2);
+        if (!isascii(wc)) {
+            mbtowc(reinterpret_cast<wchar_t *>(&wc), &text[i], 3);
+            i += 3;
+        } else {
+            i++;
+        }
 
-           putWChar(img, wc, pos, color);
-      }
+        putWChar(img, wc, pos, color);
+    }
+
+//      for (i = 0; text[i] != '\0';++i) {
+//           wchar_t wc = text[i];
+//           if(!isascii(wc)) mbtowc(&wc, &text[i++], 2);
+//
+//           putWChar(img, wc, pos, color);
+//      }
 
     return i;
 }

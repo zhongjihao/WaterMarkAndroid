@@ -324,13 +324,28 @@ public class VideoGather {
                     byte[] yuv = new byte[width*height*3/2];
                     int[] outWidth = new int[1];
                     int[] outHeight = new int[1];
-                    WaterMarkWrap.newInstance().Nv21ClockWiseRotate90(data,width,height,yuv,outWidth,outHeight);
-                    Log.d(TAG,"takePictureInternal---->outWidth: "+outWidth[0]+" ,outHeight: "+outHeight[0]);
-                    YuvImage image = new YuvImage(yuv, ImageFormat.NV21, outWidth[0], outHeight[0],null);
-                    image.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 80, filecon);
-                    Log.d(TAG,"filePath: "+pictureFile.getAbsolutePath());
-                    if (mJpegCallback != null) {
-                        mJpegCallback.onPictureTaken(pictureFile.getAbsolutePath());
+
+                    synchronized (mWaterMarkInfo) {
+                        if (mWaterMarkInfo != null) {
+                            try {
+                                mWaterMarkInfo.drawWaterMark(data, width,height);
+
+
+
+                                WaterMarkWrap.newInstance().Nv21ClockWiseRotate90(data,width,height,yuv,outWidth,outHeight);
+                                Log.d(TAG,"takePictureInternal---->outWidth: "+outWidth[0]+" ,outHeight: "+outHeight[0]);
+                                YuvImage image = new YuvImage(yuv, ImageFormat.NV21, outWidth[0], outHeight[0],null);
+                                image.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 80, filecon);
+                                Log.d(TAG,"filePath: "+pictureFile.getAbsolutePath());
+                                if (mJpegCallback != null) {
+                                    mJpegCallback.onPictureTaken(pictureFile.getAbsolutePath());
+                                }
+
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                                Log.e(TAG, "adas draw watermark exception", ex);
+                            }
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -384,18 +399,6 @@ public class VideoGather {
             //通过回调,拿到的data数据是原始数据
             if(data != null){
                 if(!mIsCaptrue.get()){
-
-                    synchronized (mWaterMarkInfo) {
-                        if (mWaterMarkInfo != null) {
-//                            try {
-//                                mWaterMarkInfo.drawWaterMark(frontFrameByteBuffer, Constant.FRONT_RECORD_WIDTH, Constant.FRONT_RECORD_HEIGHT);
-//                            } catch (Exception ex) {
-//                                ex.printStackTrace();
-//                                Log.e(TAG, "adas draw watermark exception", ex);
-//                            }
-                        }
-                    }
-
                     mDataCaches.put(SystemClock.elapsedRealtime(),new Frame(data,size.width,size.height));
                 }
                 camera.addCallbackBuffer(data);

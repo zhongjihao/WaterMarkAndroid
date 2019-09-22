@@ -10,11 +10,11 @@ public class FreeTypeJni {
         System.loadLibrary("freetype_jni");
     }
 
-    public static void putWText(Mat img, String text, Point org, int fontFace, double fontScale, Scalar color, int thickness) {
+    public synchronized static void putWText(Mat img, String text, Point org, int fontFace, double fontScale, Scalar color, int thickness) {
         putWText(img.nativeObj, text, org.x, org.y, fontFace, fontScale, color.val[0], color.val[1], color.val[2], color.val[3], thickness);
     }
 
-    public static void putText(Mat img, String text, Point org, int fontFace, double fontScale, Scalar color, int thickness) {
+    public synchronized static void putText(Mat img, String text, Point org, int fontFace, double fontScale, Scalar color, int thickness) {
         putText(img.nativeObj, text, org.x, org.y, fontFace, fontScale, color.val[0], color.val[1], color.val[2], color.val[3], thickness);
     }
 

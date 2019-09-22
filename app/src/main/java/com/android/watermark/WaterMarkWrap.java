@@ -89,7 +89,7 @@ public class WaterMarkWrap {
      * tarYuv 存储裁剪的数据
      * cutW,cutH 裁剪的分辨率
      **/
-    public void cutCommonYuv(long cPtr,int yuvType, int startX,int startY,byte[] srcYuv, int srcW,int srcH,byte[] tarYuv,int cutW, int cutH){
+    public void cutCommonYuv(int yuvType, int startX,int startY,byte[] srcYuv, int srcW,int srcH,byte[] tarYuv,int cutW, int cutH){
         if (cPtr != 0) {
             WaterMarkJni.cutCommonYuv(cPtr,yuvType,startX,startY,srcYuv,srcW,srcH,tarYuv,cutW,cutH);
         }
@@ -103,7 +103,7 @@ public class WaterMarkWrap {
      * srcH 高
      * dirty_Y/dirty_UV 冗余数据
      **/
-    public void getSpecYuvBuffer(long cPtr,int yuvType,byte[] dstBuf, byte[] srcYuv, int srcW, int srcH,int dirty_Y,int dirty_UV){
+    public void getSpecYuvBuffer(int yuvType,byte[] dstBuf, byte[] srcYuv, int srcW, int srcH,int dirty_Y,int dirty_UV){
         if (cPtr != 0) {
             WaterMarkJni.getSpecYuvBuffer(cPtr,yuvType,dstBuf,srcYuv,srcW,srcH,dirty_Y,dirty_UV);
         }
