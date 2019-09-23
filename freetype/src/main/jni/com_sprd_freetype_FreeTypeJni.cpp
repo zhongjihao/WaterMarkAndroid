@@ -111,7 +111,7 @@ JNIEXPORT void JNICALL Java_com_sprd_freetype_FreeTypeJni_putText
 }
 
 JNIEXPORT void JNICALL Java_com_sprd_freetype_FreeTypeJni_putWText
-  (JNIEnv *env, jclass jcls, jlong jimg_nativeObj, jstring jtext, jdouble jorg_x, jdouble jorg_y, jint jfontFace, jdouble jfontScale, jdouble jcolor_val0, jdouble jcolor_val1, jdouble jcolor_val2, jdouble jcolor_val3, jint jthickness)
+  (JNIEnv *env, jclass jcls, jlong jimg_nativeObj, jstring jtext, jdouble jorg_x, jdouble jorg_y, jint jfontFace, jdouble jfontScale, jdouble jcolor_val0, jdouble jcolor_val1, jdouble jcolor_val2, jdouble jcolor_val3)
 {
     static const char method_name[] = "freetype::putWText()";
     const char *utf_text = env->GetStringUTFChars(jtext, NULL);

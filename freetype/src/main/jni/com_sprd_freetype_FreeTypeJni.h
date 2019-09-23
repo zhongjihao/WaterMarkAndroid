@@ -34,10 +34,10 @@ JNIEXPORT void JNICALL Java_com_sprd_freetype_FreeTypeJni_putText
 /*
  * Class:     com_sprd_freetype_FreeTypeJni
  * Method:    putWText
- * Signature: (JLjava/lang/String;DDIDDDDDI)V
+ * Signature: (JLjava/lang/String;DDIDDDDD)V
  */
 JNIEXPORT void JNICALL Java_com_sprd_freetype_FreeTypeJni_putWText
-  (JNIEnv *, jclass, jlong, jstring, jdouble, jdouble, jint, jdouble, jdouble, jdouble, jdouble, jdouble, jint);
+  (JNIEnv *, jclass, jlong, jstring, jdouble, jdouble, jint, jdouble, jdouble, jdouble, jdouble, jdouble);
 
 #ifdef __cplusplus
 }
