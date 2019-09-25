@@ -24,7 +24,7 @@ public class WaterMark {
     private static final String TAG = "WaterMark";
 
     private static final int FONT_FACE = Core.FONT_HERSHEY_PLAIN;
-    private static final double FONT_SCALE = 1.8d;
+    private static final double FONT_SCALE = 2.0d;
     private static final int TEXT_THICKNESS = 2;
     private static final int WATER_MARK_HEIGHT_MIN = 50;
     private static final int WATER_MARK_CONTENT_LEN_MAX = 50;
@@ -111,7 +111,6 @@ public class WaterMark {
                 return;
 
             if (mWatermarkLocation != null) {
-
 //                    ret = i420AddWaterMark(markX, markY, mWatermarkLocation.mI420Data, mWatermarkLocation.mWidth,
 //                            mWatermarkLocation.mHeight, frame, frameWidth, frameHeight);
                   //  WaterMarkWrap.newInstance().yuvAddWaterMark(1,markX, markY,mWatermarkLocation.mNv21Data, mWatermarkLocation.mWidth, mWatermarkLocation.mHeight, frame, frameWidth, frameHeight);
@@ -120,9 +119,6 @@ public class WaterMark {
             }
 
             if (mWatermarkTime != null) {
-
-//                    ret = i420AddWaterMark(markX, markY, mWatermarkTime.mI420Data, mWatermarkTime.mWidth,
-//                            mWatermarkTime.mHeight, frame, frameWidth, frameHeight);
                 byte[] cutBuf = new byte[mWatermarkTime.mWidth * mWatermarkTime.mHeight * 3 / 2];
                 WaterMarkWrap.newInstance().cutCommonYuv(1, markX, markY, frame, frameWidth, frameHeight, cutBuf, mWatermarkTime.mWidth, mWatermarkTime.mHeight);
                 WaterMarkWrap.newInstance().getSpecYuvBuffer(1, cutBuf, mWatermarkTime.mNv21Data, mWatermarkTime.mWidth, mWatermarkTime.mHeight, 0x10, 0x80);
@@ -148,25 +144,13 @@ public class WaterMark {
         }
 
         public void updateContent(final String content) {
-            if (content == null) {
-                mI420Data = null;
-                return;
+            if(!TextUtils.isEmpty(content)){
+                if (!TextUtils.equals(content, mContent)){
+                    mContent = content;
+                    Log.d(TAG,"updateContent :"+mContent);
+                    createWatermark();
+                }
             }
-            final String formattedContent;
-
-            if (content.length() > WATER_MARK_CONTENT_LEN_MAX)
-                formattedContent = content.substring(0, WATER_MARK_CONTENT_LEN_MAX / 2 - 3)
-                        + "..." + content.substring(content.length() - WATER_MARK_CONTENT_LEN_MAX / 2);
-            else
-                formattedContent = content;
-
-            if (TextUtils.equals(formattedContent, mContent))
-                return;
-
-            mContent = formattedContent;
-
-            Log.d(TAG,"updateContent :"+mContent);
-            createWatermark();
         }
 
         private void createWatermark() {
@@ -185,7 +169,7 @@ public class WaterMark {
             mHeight = (mHeight % 2 == 0) ? mHeight : mHeight + 1;
 
             origin.x = 0;
-            origin.y = size.height + (mHeight - size.height) / 2;
+            origin.y = size.height + (mHeight - size.height) / 2.0f;
 
             Mat rgbMat = new Mat(new Size(mWidth, mHeight), CvType.CV_8UC4);
 
@@ -197,9 +181,6 @@ public class WaterMark {
                 }
             }
 
-
-            Log.d(TAG,"createWatermark :"+mContent);
-
             int yuvWidth = mWidth;
             int yuvHeight = mHeight * 3 / 2;
 
@@ -208,6 +189,7 @@ public class WaterMark {
             mI420Data = new byte[yuvWidth * yuvHeight];
             waterMarkMat.get(0, 0, mI420Data);
             mNv21Data = new byte[yuvWidth * yuvHeight];
+            Log.d(TAG,"createWatermark :"+mContent+"   mWidth: "+mWidth+"  mHeight: "+mHeight);
             WaterMarkWrap.newInstance().I420ToNv21(mI420Data, mNv21Data, mWidth, mHeight);
 
         }

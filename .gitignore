@@ -9,3 +9,4 @@ app/.externalNativeBuild
 app/proguard-rules.pro
 app/src/androidTest
 app/src/test
+freetype/src/main/obj/

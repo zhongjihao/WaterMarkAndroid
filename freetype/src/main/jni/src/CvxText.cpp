@@ -126,8 +126,8 @@ void CvxText::restoreFont()
 
     m_fontType = 0;            // 字体类型(不支持)
 
-    m_fontSize.val[0] = 25;      // 字体大小
-    m_fontSize.val[1] = 0.5;   // 空白字符大小比例
+    m_fontSize.val[0] = 40;      // 字体大小
+    m_fontSize.val[1] = 2;   // 空白字符大小比例
     m_fontSize.val[2] = 0.1;   // 间隔大小比例
     m_fontSize.val[3] = 0;      // 旋转角度(不支持)
 

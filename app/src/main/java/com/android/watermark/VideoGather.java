@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
@@ -34,7 +33,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static android.hardware.Camera.Parameters.FOCUS_MODE_AUTO;
 import static android.hardware.Camera.Parameters.PREVIEW_FPS_MAX_INDEX;
 import static android.hardware.Camera.Parameters.PREVIEW_FPS_MIN_INDEX;
 
@@ -183,9 +181,6 @@ public class VideoGather {
             }
 
             mCameraParamters.setPreviewFormat(ImageFormat.NV21);
-//            mCameraParamters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-//            mCameraParamters.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
-//            mCameraParamters.setSceneMode(Camera.Parameters.SCENE_MODE_AUTO);
             // Set preview size.
             List<Camera.Size> supportedPreviewSizes = mCameraParamters.getSupportedPreviewSizes();
             Collections.sort(supportedPreviewSizes, new Comparator<Camera.Size>() {
@@ -232,16 +227,18 @@ public class VideoGather {
             mCamera.addCallbackBuffer(new byte[previewSize.width * previewSize.height*3/2]);
             mCamera.setPreviewCallbackWithBuffer(mCameraPreviewCallback);
             List<String> focusModes = mCameraParamters.getSupportedFocusModes();
-
-            for (String focusMode : focusModes){//检查支持的对焦
-                Log.d(TAG, "=====zhongjihao=====setParameters====focusMode:" + focusMode);
-                if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)){
-                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-                }else if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)){
-                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-                }else if(focusMode.contains(Camera.Parameters.FOCUS_MODE_AUTO)){
-                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                }
+//            for (String focusMode : focusModes){//检查支持的对焦
+//                Log.d(TAG, "=====zhongjihao=====setParameters====focusMode:" + focusMode);
+//                if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)){
+//                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+//                }else if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)){
+//                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+//                }else if(focusMode.contains(Camera.Parameters.FOCUS_MODE_AUTO)){
+//                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+//                }
+//            }
+            if(focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)){
+                mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             }
             Log.d(TAG, "=====zhongjihao=====setParameters====preWidth:" + preWidth+"   preHeight: "+preHeight+"  frameRate: "+frameRate);
             mCamera.setParameters(mCameraParamters);
@@ -294,7 +291,7 @@ public class VideoGather {
 
             Frame frame = map.get(lastYuvTime);
             String filename = FileUtil.getPicFileName(System.currentTimeMillis());
-            Log.d(TAG, "takePicture------->filename: " + filename+" ,width: "+previewSize.width+" ,height: "+previewSize.height);
+            Log.d(TAG, "takePicture------->filename: " + filename+" ,width: "+frame.width+" ,height: "+frame.height);
             takePictureInternal(mJpegCallback,filename, frame.nv21,frame.width,frame.height);
         }else {
             Log.e(TAG, "takePicture------data Cache is empty!");
@@ -321,31 +318,12 @@ public class VideoGather {
                 try {
                     pictureFile.createNewFile();
                     filecon = new FileOutputStream(pictureFile);
-                    byte[] yuv = new byte[width*height*3/2];
-                    int[] outWidth = new int[1];
-                    int[] outHeight = new int[1];
-
-                    synchronized (mWaterMarkInfo) {
-                        if (mWaterMarkInfo != null) {
-                            try {
-                                mWaterMarkInfo.drawWaterMark(data, width,height);
-
-
-
-                                WaterMarkWrap.newInstance().Nv21ClockWiseRotate90(data,width,height,yuv,outWidth,outHeight);
-                                Log.d(TAG,"takePictureInternal---->outWidth: "+outWidth[0]+" ,outHeight: "+outHeight[0]);
-                                YuvImage image = new YuvImage(yuv, ImageFormat.NV21, outWidth[0], outHeight[0],null);
-                                image.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 80, filecon);
-                                Log.d(TAG,"filePath: "+pictureFile.getAbsolutePath());
-                                if (mJpegCallback != null) {
-                                    mJpegCallback.onPictureTaken(pictureFile.getAbsolutePath());
-                                }
-
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                Log.e(TAG, "adas draw watermark exception", ex);
-                            }
-                        }
+                    YuvImage image = new YuvImage(data, ImageFormat.NV21, width, height, null);
+                    image.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 80, filecon);
+                    filecon.flush();
+                    Log.d(TAG, "takePictureInternal---->filePath: " + pictureFile.getAbsolutePath());
+                    if (mJpegCallback != null) {
+                        mJpegCallback.onPictureTaken(pictureFile.getAbsolutePath());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -399,7 +377,9 @@ public class VideoGather {
             //通过回调,拿到的data数据是原始数据
             if(data != null){
                 if(!mIsCaptrue.get()){
-                    mDataCaches.put(SystemClock.elapsedRealtime(),new Frame(data,size.width,size.height));
+                    Message message = mHandler.obtainMessage(MSG_WATER_MAKR);
+                    message.obj = new Frame(data,size.width,size.height);
+                    mHandler.sendMessageDelayed(message, 1000);
                 }
                 camera.addCallbackBuffer(data);
             }
@@ -417,16 +397,25 @@ public class VideoGather {
                         mHandler.removeMessages(MSG_WATER_MAKR);
                     }
 
-                    synchronized (mWaterMarkInfo) {
-                        if (mWaterMarkInfo != null){
-                            //Log.d(TAG,"mAdasWaterMarkInfo: "+mAdasWaterMarkInfo);
+                    if (mWaterMarkInfo != null) {
+                        try {
                             mWaterMarkInfo.onTimeChanged(TimeUtil.getCurrentTime(TimeUtil.TIME_FORMAT_WATERMARK_DISPLAY));
                             mWaterMarkInfo.onLocationChanged("广东深圳");
+
+                            Frame frame = (Frame) msg.obj;
+                            Log.d(TAG,"width: "+frame.width+"  height: "+frame.height);
+                            byte[] yuv = new byte[frame.width * frame.height *3/2];
+                            int[] outWidth = new int[1];
+                            int[] outHeight = new int[1];
+                            WaterMarkWrap.newInstance().Nv21ClockWiseRotate90(frame.nv21, frame.width, frame.height, yuv, outWidth, outHeight);
+                            mWaterMarkInfo.drawWaterMark(yuv, outWidth[0], outHeight[0]);
+                            Log.d(TAG, "waterMark--->outWidth: " + outWidth[0] + " ,outHeight: " + outHeight[0]);
+                            mDataCaches.put(SystemClock.elapsedRealtime(),new Frame(yuv,outWidth[0],outHeight[0]));
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            Log.e(TAG, "draw watermark exception", ex);
                         }
                     }
-
-                    Message message = mHandler.obtainMessage(MSG_WATER_MAKR);
-                    mHandler.sendMessageDelayed(message, 1000);
                     break;
                 }
             }
