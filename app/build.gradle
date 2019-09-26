@@ -19,7 +19,7 @@ android {
         sourceSets {
             main {
                 // 设置Jni so文件路径
-                jniLibs.srcDirs = ['src/main/libs']
+                jniLibs.srcDirs = ['libs']
             }
         }
     }
@@ -40,6 +40,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':opencv_java')
     implementation project(':freetype')
+    implementation files('libs/BaiduLBS_Android.jar')
+    implementation files('libs/SecurityEnvSDK-release-1.1.0.jar')
+    implementation files('libs/utdid4all-1.1.5.3_proguard.jar')
 
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'

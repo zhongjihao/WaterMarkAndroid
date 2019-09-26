@@ -27,7 +27,6 @@ public class WaterMark {
     private static final double FONT_SCALE = 2.0d;
     private static final int TEXT_THICKNESS = 2;
     private static final int WATER_MARK_HEIGHT_MIN = 50;
-    private static final int WATER_MARK_CONTENT_LEN_MAX = 50;
     private static final Scalar TEXT_COLOR = new Scalar(255.0D, 255.0D, 0.0D);// RGB
 
 

@@ -41,7 +41,7 @@ import static android.hardware.Camera.Parameters.PREVIEW_FPS_MIN_INDEX;
  */
 
 
-public class VideoGather {
+public class VideoGather implements LocationManager.ILocationListen{
     private static final String TAG = "VideoGather";
     private int preWidth;
     private int preHeight;
@@ -73,6 +73,8 @@ public class VideoGather {
     private WaterMark.WaterMarkInfo mWaterMarkInfo = null;
     private HandlerThread mHandlerThread;
     private Handler mHandler;
+    private String mAddress;
+    private Object objLock = new  Object ();
     private final static int MSG_WATER_MAKR = 1;
 
     private VideoGather() {
@@ -290,9 +292,11 @@ public class VideoGather {
             }
 
             Frame frame = map.get(lastYuvTime);
-            String filename = FileUtil.getPicFileName(System.currentTimeMillis());
-            Log.d(TAG, "takePicture------->filename: " + filename+" ,width: "+frame.width+" ,height: "+frame.height);
-            takePictureInternal(mJpegCallback,filename, frame.nv21,frame.width,frame.height);
+            if(frame != null){
+                String filename = FileUtil.getPicFileName(System.currentTimeMillis());
+                Log.d(TAG, "takePicture------->filename: " + filename+" ,width: "+frame.width+" ,height: "+frame.height);
+                takePictureInternal(mJpegCallback,filename, frame.nv21,frame.width,frame.height);
+            }
         }else {
             Log.e(TAG, "takePicture------data Cache is empty!");
         }
@@ -389,6 +393,13 @@ public class VideoGather {
         }
     }
 
+    @Override
+    public void updateAddress(String addr){
+        synchronized (objLock) {
+            mAddress = addr;
+        }
+    }
+
     private Handler.Callback mCallback = new Handler.Callback() {
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
@@ -400,7 +411,9 @@ public class VideoGather {
                     if (mWaterMarkInfo != null) {
                         try {
                             mWaterMarkInfo.onTimeChanged(TimeUtil.getCurrentTime(TimeUtil.TIME_FORMAT_WATERMARK_DISPLAY));
-                            mWaterMarkInfo.onLocationChanged("广东深圳");
+                            synchronized (objLock) {
+                                mWaterMarkInfo.onLocationChanged(mAddress);
+                            }
 
                             Frame frame = (Frame) msg.obj;
                             Log.d(TAG,"width: "+frame.width+"  height: "+frame.height);

@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // 要申请的权限
     private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,13 +72,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         permissions, TARGET_PERMISSION_REQUEST);
             }
         }
-
+        LocationManager.getInstance().onStart();
         WaterMarkWrap.newInstance().startWaterMarkEngine();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LocationManager.getInstance().onStop();
         VideoGather.getInstance().doStopCamera();
         WaterMarkWrap.newInstance().stopWaterMarkEngine();
     }
