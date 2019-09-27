@@ -3,7 +3,11 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
+        def date = new Date()
+        def formattedDate = date.format('yyMMddHHmm')
         applicationId "com.android.watermark"
+        versionCode 100
+        setProperty("archivesBaseName", "v2.3.$versionCode.$formattedDate")
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 1
@@ -23,6 +27,14 @@ android {
             }
         }
     }
+
+    flavorDimensions "default"
+    productFlavors {
+        WATER_MARK_APP {
+            versionName "$archivesBaseName"+"_$name"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false

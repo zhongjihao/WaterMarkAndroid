@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             finish();
+            System.exit(0);//正常退出
             return true;
         } else {
             return super.onKeyDown(keyCode, event);

@@ -1,5 +1,6 @@
 package com.android.watermark;
 
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -24,11 +25,10 @@ public class WaterMark {
     private static final String TAG = "WaterMark";
 
     private static final int FONT_FACE = Core.FONT_HERSHEY_PLAIN;
-    private static final double FONT_SCALE = 2.0d;
-    private static final int TEXT_THICKNESS = 2;
+    private static final double FONT_SCALE = 1.1d;
+    private static final int TEXT_THICKNESS = 1;
     private static final int WATER_MARK_HEIGHT_MIN = 50;
     private static final Scalar TEXT_COLOR = new Scalar(255.0D, 255.0D, 0.0D);// RGB
-
 
     public static class RGB {
         public float mRed;
@@ -67,9 +67,12 @@ public class WaterMark {
         private String mAddress = null;
         private WaterMarkData mWatermarkLocation = null;
 
+        private String mProduct = null;
+        private WaterMarkData mWatermarkProduct;
 
         public WaterMarkInfo() {
             mTime = TimeUtil.getCurrentTime(TimeUtil.TIME_FORMAT_WATERMARK_DISPLAY);
+            mProduct = "手机型号: "+Build.MODEL;
         }
 
         public void onReady() {
@@ -82,6 +85,11 @@ public class WaterMark {
                 mWatermarkLocation = new WaterMarkData();
             }
             mWatermarkLocation.updateContent(mAddress);
+
+            if(mWatermarkProduct == null){
+                mWatermarkProduct = new WaterMarkData();
+            }
+            mWatermarkProduct.updateContent(mProduct);
 
             mReady = true;
         }
@@ -105,16 +113,18 @@ public class WaterMark {
 
         public void drawWaterMark(byte[] frame, final int frameWidth, final int frameHeight) {
             int markX = 20, markY = 20;
-            boolean ret;
             if (!mReady)
                 return;
 
             if (mWatermarkLocation != null) {
-//                    ret = i420AddWaterMark(markX, markY, mWatermarkLocation.mI420Data, mWatermarkLocation.mWidth,
-//                            mWatermarkLocation.mHeight, frame, frameWidth, frameHeight);
-                  //  WaterMarkWrap.newInstance().yuvAddWaterMark(1,markX, markY,mWatermarkLocation.mNv21Data, mWatermarkLocation.mWidth, mWatermarkLocation.mHeight, frame, frameWidth, frameHeight);
-
-                markY += WATER_MARK_HEIGHT_MIN;
+                if(mWatermarkLocation.mNv21Data != null){
+                    byte[] cutBuf = new byte[mWatermarkLocation.mWidth * mWatermarkLocation.mHeight * 3 / 2];
+                    WaterMarkWrap.newInstance().cutCommonYuv(1, markX, markY, frame, frameWidth, frameHeight, cutBuf, mWatermarkLocation.mWidth, mWatermarkLocation.mHeight);
+                    WaterMarkWrap.newInstance().getSpecYuvBuffer(1, cutBuf, mWatermarkLocation.mNv21Data, mWatermarkLocation.mWidth, mWatermarkLocation.mHeight, 0x10, 0x80);
+                    WaterMarkWrap.newInstance().yuvAddWaterMark(1, markX, markY, cutBuf, mWatermarkLocation.mWidth, mWatermarkLocation.mHeight, frame, frameWidth, frameHeight);
+                    Log.d(TAG, "markX: " + markX + "  markY: " + markY + "   waterLocation: " + mWatermarkLocation.mNv21Data);
+                    markY += WATER_MARK_HEIGHT_MIN;
+                }
             }
 
             if (mWatermarkTime != null) {
@@ -123,6 +133,16 @@ public class WaterMark {
                 WaterMarkWrap.newInstance().getSpecYuvBuffer(1, cutBuf, mWatermarkTime.mNv21Data, mWatermarkTime.mWidth, mWatermarkTime.mHeight, 0x10, 0x80);
                 WaterMarkWrap.newInstance().yuvAddWaterMark(1, markX, markY, cutBuf, mWatermarkTime.mWidth, mWatermarkTime.mHeight, frame, frameWidth, frameHeight);
                 Log.d(TAG, "markX: " + markX + "  markY: " + markY + "   waterTime: " + mWatermarkTime.mNv21Data);
+
+                markY += WATER_MARK_HEIGHT_MIN;
+            }
+
+            if (mWatermarkProduct != null) {
+                byte[] cutBuf = new byte[mWatermarkProduct.mWidth * mWatermarkProduct.mHeight * 3 / 2];
+                WaterMarkWrap.newInstance().cutCommonYuv(1, markX, markY, frame, frameWidth, frameHeight, cutBuf, mWatermarkProduct.mWidth, mWatermarkProduct.mHeight);
+                WaterMarkWrap.newInstance().getSpecYuvBuffer(1, cutBuf, mWatermarkProduct.mNv21Data, mWatermarkProduct.mWidth, mWatermarkProduct.mHeight, 0x10, 0x80);
+                WaterMarkWrap.newInstance().yuvAddWaterMark(1, markX, markY, cutBuf, mWatermarkProduct.mWidth, mWatermarkProduct.mHeight, frame, frameWidth, frameHeight);
+                Log.d(TAG, "markX: " + markX + "  markY: " + markY + "   waterTime: " + mWatermarkProduct.mNv21Data);
 
                 markY += WATER_MARK_HEIGHT_MIN;
             }

@@ -39,8 +39,14 @@ public class LocationManager {
         mLocationListen = locationListen;
     }
 
+    public void unRegisterLocationListen(){
+        mLocationListen = null;
+    }
+
     public void logMsg(final String str, final int tag) {
         if (tag == Utils.RECEIVE_TAG) {
+            Log.d(TAG,"tag: "+tag+"   logMsg: "+str);
+        }else if(tag == Utils.DIAGNOSTIC_TAG){
             Log.d(TAG,"tag: "+tag+"   logMsg: "+str);
         }
     }

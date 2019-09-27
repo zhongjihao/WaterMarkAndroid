@@ -73,16 +73,11 @@ public class VideoGather implements LocationManager.ILocationListen{
     private WaterMark.WaterMarkInfo mWaterMarkInfo = null;
     private HandlerThread mHandlerThread;
     private Handler mHandler;
-    private String mAddress;
-    private Object objLock = new  Object ();
+    private String mAddress = null;
     private final static int MSG_WATER_MAKR = 1;
 
     private VideoGather() {
-        mWaterMarkInfo = new WaterMark.WaterMarkInfo();
-        mHandlerThread = new HandlerThread( "WaterMarkthread");
-        //开启一个线程
-        mHandlerThread.start();
-        mHandler = new Handler(mHandlerThread.getLooper(),mCallback);
+        Log.d(TAG,"VideoGather()");
     }
 
     public interface CameraOperateCallback {
@@ -112,6 +107,12 @@ public class VideoGather implements LocationManager.ILocationListen{
         if (mCamera == null) {
             throw new RuntimeException("Unable to open camera");
         }
+        LocationManager.getInstance().registerLocationListen(this);
+        mWaterMarkInfo = new WaterMark.WaterMarkInfo();
+        mHandlerThread = new HandlerThread( "WaterMarkthread");
+        //开启一个线程
+        mHandlerThread.start();
+        mHandler = new Handler(mHandlerThread.getLooper(),mCallback);
         Log.d(TAG, "====zhongjihao=====Camera open over....");
         cameraCb.cameraHasOpened();
     }
@@ -146,17 +147,13 @@ public class VideoGather implements LocationManager.ILocationListen{
                     Log.d(TAG,"WaterMark Ready");
                     mWaterMarkInfo.onReady();
                 }
-                if (mHandler.hasMessages(MSG_WATER_MAKR)){
-                    mHandler.removeMessages(MSG_WATER_MAKR);
-                }
-                Message message = mHandler.obtainMessage(MSG_WATER_MAKR);
-                mHandler.sendMessageDelayed(message, 1000);
             }
         });
     }
 
     public void doStopCamera() {
         Log.d(TAG, "=====zhongjihao=======doStopCamera");
+        LocationManager.getInstance().unRegisterLocationListen();
         // 如果camera不为null，释放摄像头
         if (mCamera != null) {
             mCamera.setPreviewCallbackWithBuffer(null);
@@ -229,18 +226,15 @@ public class VideoGather implements LocationManager.ILocationListen{
             mCamera.addCallbackBuffer(new byte[previewSize.width * previewSize.height*3/2]);
             mCamera.setPreviewCallbackWithBuffer(mCameraPreviewCallback);
             List<String> focusModes = mCameraParamters.getSupportedFocusModes();
-//            for (String focusMode : focusModes){//检查支持的对焦
-//                Log.d(TAG, "=====zhongjihao=====setParameters====focusMode:" + focusMode);
-//                if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)){
-//                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-//                }else if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)){
-//                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-//                }else if(focusMode.contains(Camera.Parameters.FOCUS_MODE_AUTO)){
-//                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-//                }
-//            }
-            if(focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)){
-                mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            for (String focusMode : focusModes){//检查支持的对焦
+                Log.d(TAG, "=====zhongjihao=====setParameters====focusMode:" + focusMode);
+                if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)){
+                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+                }else if (focusMode.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)){
+                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                }else if(focusMode.contains(Camera.Parameters.FOCUS_MODE_AUTO)){
+                    mCameraParamters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+                }
             }
             Log.d(TAG, "=====zhongjihao=====setParameters====preWidth:" + preWidth+"   preHeight: "+preHeight+"  frameRate: "+frameRate);
             mCamera.setParameters(mCameraParamters);
@@ -395,9 +389,7 @@ public class VideoGather implements LocationManager.ILocationListen{
 
     @Override
     public void updateAddress(String addr){
-        synchronized (objLock) {
-            mAddress = addr;
-        }
+        mAddress = addr;
     }
 
     private Handler.Callback mCallback = new Handler.Callback() {
@@ -411,9 +403,7 @@ public class VideoGather implements LocationManager.ILocationListen{
                     if (mWaterMarkInfo != null) {
                         try {
                             mWaterMarkInfo.onTimeChanged(TimeUtil.getCurrentTime(TimeUtil.TIME_FORMAT_WATERMARK_DISPLAY));
-                            synchronized (objLock) {
-                                mWaterMarkInfo.onLocationChanged(mAddress);
-                            }
+                            mWaterMarkInfo.onLocationChanged(mAddress);
 
                             Frame frame = (Frame) msg.obj;
                             Log.d(TAG,"width: "+frame.width+"  height: "+frame.height);
