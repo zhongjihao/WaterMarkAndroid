@@ -7,7 +7,7 @@ Android平台基于freetype和opencv实现视频中文水印
      Camera采集数据,拍照支持时间水印,位置水印,以及机型水印等 \
      集成百度地图获取具体位置信息
 
-二 freetype子工程, 实现中文水印
+二 freetype子工程, 实现中文水印 \
   1 下载freetype库版本为2.10.1,地址为 \
      http://sourceforge.net/projects/freetype/files/freetype2/
 
