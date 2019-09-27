@@ -48,4 +48,6 @@ Android平台基于freetype和opencv实现视频中文水印
   3 将sdk/native/libs/armeabi-v7a中的libopencv_java3.so拷贝到子工程freetype/src/main/jni/lib下
 
   4 将sdk/native/jni/include目录下opencv和opencv2全部拷贝到子工程freetype/src/main/jni/include下
-	
+
+运行截图 \
+![afd](watermark.jpeg)
