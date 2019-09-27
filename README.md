@@ -1,12 +1,13 @@
 # WaterMarkAndroid
-Android平台基于freetype和opencv实现视频水印
+Android平台基于freetype和opencv实现视频中文水印
 
 本工程包括如下部分
 
 1 主工程
-     Camera采集数据并添加水印
+     Camera采集数据,拍照支持时间水印,位置水印,以及机型水印等 \
+     集成百度地图获取具体位置信息
 
-2 freetype-2.10.1子工程 \
+2 freetype-2.10.1子工程, 实现中文水印
   1 下载freetype库版本为2.10.1,地址为 \
      http://sourceforge.net/projects/freetype/files/freetype2/
 
@@ -31,11 +32,11 @@ Android平台基于freetype和opencv实现视频水印
 	  make -j4 \
 	  make install DESTDIR=$(pwd)
 
-  8 将编译出来的freetype目录下头文件拷贝到jni/include
+  8 将编译出来的freetype目录下头文件拷贝到jni/include \
   9 将编译出来的freetype目录下的库文件libfreetype.so拷贝到jni/lib
 
-  10 cd jni进入到jni目录下，执行ndk-build
-	
+  10 cd jni进入到jni目录下，执行ndk-build \
+  11 AS编译运行即可
     
 
 3 opencv_java子工程 \
