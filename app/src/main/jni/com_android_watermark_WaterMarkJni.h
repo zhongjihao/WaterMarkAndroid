@@ -49,6 +49,22 @@ JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_I420ToNv21
 
 /*
  * Class:     com_android_watermark_WaterMarkJni
+ * Method:    Nv21ToYV12
+ * Signature: (J[B[BII)V
+ */
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ToYV12
+  (JNIEnv *, jclass, jlong, jbyteArray, jbyteArray, jint, jint);
+
+/*
+ * Class:     com_android_watermark_WaterMarkJni
+ * Method:    YV12ToNv21
+ * Signature: (J[B[BII)V
+ */
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_YV12ToNv21
+  (JNIEnv *, jclass, jlong, jbyteArray, jbyteArray, jint, jint);
+
+/*
+ * Class:     com_android_watermark_WaterMarkJni
  * Method:    Nv21ToNv12
  * Signature: (J[B[BII)V
  */
@@ -109,6 +125,30 @@ JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ClockWiseRota
  * Signature: (J[BII[B[I[I)V
  */
 JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ClockWiseRotate270
+  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint, jbyteArray, jintArray, jintArray);
+
+/*
+ * Class:     com_android_watermark_WaterMarkJni
+ * Method:    Nv12ClockWiseRotate90
+ * Signature: (J[BII[B[I[I)V
+ */
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv12ClockWiseRotate90
+  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint, jbyteArray, jintArray, jintArray);
+
+/*
+ * Class:     com_android_watermark_WaterMarkJni
+ * Method:    I420ClockWiseRotate90
+ * Signature: (J[BII[B[I[I)V
+ */
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_I420ClockWiseRotate90
+  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint, jbyteArray, jintArray, jintArray);
+
+/*
+ * Class:     com_android_watermark_WaterMarkJni
+ * Method:    Yv12ClockWiseRotate90
+ * Signature: (J[BII[B[I[I)V
+ */
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Yv12ClockWiseRotate90
   (JNIEnv *, jclass, jlong, jbyteArray, jint, jint, jbyteArray, jintArray, jintArray);
 
 /*

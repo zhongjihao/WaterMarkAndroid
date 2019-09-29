@@ -69,6 +69,10 @@ public:
     void Nv21ToI420(unsigned char* pNv21,unsigned char* pI420,int width,int height);
     //I420 -> NV21
     void I420ToNv21(unsigned char* pI420,unsigned char* pNv21,int width,int height);
+    //NV21 -> Yv12
+    void Nv21ToYv12(unsigned char* pNv21,unsigned char* pYv12,int width,int height);
+    //Yv12 -> NV21
+    void Yv12ToNv21(unsigned char* pYv12,unsigned char* pNv21,int width,int height);
     //NV21 -> NV12
     void Nv21ToNv12(unsigned char* pNv21,unsigned char* pNv12,int width,int height);
     //NV12 -> NV21
@@ -137,6 +141,39 @@ public:
     * outHeight 旋转后对应的高
     */
     void Nv21ClockWiseRotate270(unsigned char* pNv21,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight);
+
+    /**
+  * I420顺时针旋转90度
+  * pI420     原I420数据
+  * srcWidth  原I420对应的宽
+  * srcHeight 原I420对应的高
+  * outData   旋转后的I420数据
+  * outWidth  旋转后对应的宽
+  * outHeight 旋转后对应的高
+  */
+    void I420ClockWiseRotate90(unsigned char* pI420,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight);
+
+    /**
+    * Nv12顺时针旋转90度
+    * pNv12     原nv12数据
+    * srcWidth  原nv12对应的宽
+    * srcHeight 原nv12对应的高
+    * outData   旋转后的nv12数据
+    * outWidth  旋转后对应的宽
+    * outHeight 旋转后对应的高
+    */
+    void Nv12ClockWiseRotate90(unsigned char* pNv12,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight);
+
+    /**
+  * YV12顺时针旋转90度
+  * pYv12     原Yv12数据
+  * srcWidth  原Yv12对应的宽
+  * srcHeight 原Yv12对应的高
+  * outData   旋转后的Yv12数据
+  * outWidth  旋转后对应的宽
+  * outHeight 旋转后对应的高
+  */
+    void Yv12ClockWiseRotate90(unsigned char* pYv12,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight);
 };
 
 

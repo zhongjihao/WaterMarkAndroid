@@ -64,6 +64,24 @@ public class WaterMarkWrap {
     }
 
     /**
+     * NV21 -> YV12
+     */
+    public void Nv21ToYv12(byte[] pNv21,byte[] pYv12,int width,int height) {
+        if (cPtr != 0) {
+            WaterMarkJni.Nv21ToYV12(cPtr, pNv21,pYv12, width,height);
+        }
+    }
+
+    /**
+     * YV12 -> NV21
+     */
+    public void Yv12ToNv21(byte[] pYv12,byte[] pNv21,int width,int height) {
+        if (cPtr != 0) {
+            WaterMarkJni.YV12ToNv21(cPtr, pYv12, pNv21, width, height);
+        }
+    }
+
+    /**
      * NV21 -> NV12
      */
     public void Nv21ToNv12(byte[] pNv21,byte[] pNv12,int width,int height){
@@ -166,6 +184,51 @@ public class WaterMarkWrap {
     public void Nv21ClockWiseRotate270(byte[] pNv21,int srcWidth,int srcHeight,byte[] outData,int[] outWidth,int[] outHeight){
         if (cPtr != 0) {
             WaterMarkJni.Nv21ClockWiseRotate270(cPtr, pNv21, srcWidth, srcHeight,outData,outWidth,outHeight);
+        }
+    }
+
+    /**
+     * Nv12顺时针旋转90度
+     * pNv12     原nv12数据
+     * srcWidth  原nv12对应的宽
+     * srcHeight 原nv12对应的高
+     * outData   旋转后的nv12数据
+     * outWidth  旋转后对应的宽
+     * outHeight 旋转后对应的高
+     */
+    public void Nv12ClockWiseRotate90(byte[] pNv12,int srcWidth,int srcHeight,byte[] outData,int[] outWidth,int[] outHeight){
+        if (cPtr != 0) {
+            WaterMarkJni.Nv12ClockWiseRotate90(cPtr, pNv12, srcWidth, srcHeight,outData,outWidth,outHeight);
+        }
+    }
+
+    /**
+     * I420顺时针旋转90度
+     * pI420     原I420数据
+     * srcWidth  原I420对应的宽
+     * srcHeight 原I420对应的高
+     * outData   旋转后的I420数据
+     * outWidth  旋转后对应的宽
+     * outHeight 旋转后对应的高
+     */
+    public void I420ClockWiseRotate90(byte[] pI420, int srcWidth,int srcHeight,byte[] outData, int[] outWidth,int[] outHeight){
+        if (cPtr != 0) {
+            WaterMarkJni.I420ClockWiseRotate90(cPtr, pI420, srcWidth, srcHeight,outData,outWidth,outHeight);
+        }
+    }
+
+    /**
+     * YV12顺时针旋转90度
+     * pYv12     原Yv12数据
+     * srcWidth  原Yv12对应的宽
+     * srcHeight 原Yv12对应的高
+     * outData   旋转后的Yv12数据
+     * outWidth  旋转后对应的宽
+     * outHeight 旋转后对应的高
+     */
+    public void Yv12ClockWiseRotate90(byte[] pYv12, int srcWidth,int srcHeight,byte[] outData, int[] outWidth,int[] outHeight){
+        if (cPtr != 0) {
+            WaterMarkJni.Yv12ClockWiseRotate90(cPtr, pYv12, srcWidth, srcHeight,outData,outWidth,outHeight);
         }
     }
 

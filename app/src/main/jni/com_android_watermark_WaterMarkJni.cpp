@@ -77,6 +77,36 @@ JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_I420ToNv21
     env->ReleaseByteArrayElements(jNv21Data, jNv21, 0);
 }
 
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ToYV12
+        (JNIEnv * env, jclass jcls __unused, jlong jcPtr, jbyteArray jNv21Data, jbyteArray jYv12Data, jint jwidth, jint jheight)
+{
+    jbyte* jNv21 = env->GetByteArrayElements(jNv21Data, NULL);
+    jbyte* jYv12 = env->GetByteArrayElements(jYv12Data, NULL);
+
+    unsigned char* pNv21 = (unsigned char*)jNv21;
+    unsigned char* pYv12 = (unsigned char*)jYv12;
+
+    WaterMark* pYuvWater = reinterpret_cast<WaterMark*> (jcPtr);
+    pYuvWater->Nv21ToYv12(pNv21,pYv12,(int)jwidth, (int)jheight);
+    env->ReleaseByteArrayElements(jNv21Data, jNv21, 0);
+    env->ReleaseByteArrayElements(jYv12Data, jYv12, 0);
+}
+
+JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_YV12ToNv21
+        (JNIEnv * env, jclass jcls __unused, jlong jcPtr, jbyteArray jYv12Data , jbyteArray jNv21Data, jint jwidth, jint jheight)
+{
+    jbyte* jYv12 = env->GetByteArrayElements(jYv12Data, NULL);
+    jbyte* jNv21 = env->GetByteArrayElements(jNv21Data, NULL);
+
+    unsigned char* pYv12 = (unsigned char*)jYv12;
+    unsigned char* pNv21 = (unsigned char*)jNv21;
+
+    WaterMark* pYuvWater = reinterpret_cast<WaterMark*> (jcPtr);
+    pYuvWater->Yv12ToNv21(pYv12,pNv21,(int)jwidth, (int)jheight);
+    env->ReleaseByteArrayElements(jYv12Data, jYv12, 0);
+    env->ReleaseByteArrayElements(jNv21Data, jNv21, 0);
+}
+
 JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ToNv12
   (JNIEnv * env, jclass jcls __unused, jlong jcPtr, jbyteArray jNv21Data, jbyteArray jNv12Data, jint jwidth, jint jheight)
 {
@@ -222,6 +252,83 @@ JNIEXPORT void JNICALL Java_com_android_watermark_WaterMarkJni_Nv21ClockWiseRota
     env->ReleaseIntArrayElements(joutWidth, joutWidthInt, 0);
     env->ReleaseIntArrayElements(joutHeight, joutHeightInt, 0);
     env->ReleaseByteArrayElements(jsrcNv21, jsrcNv21Byte, 0);
+    env->ReleaseByteArrayElements(joutData, joutDataByte, 0);
+}
+
+//I420(YUV420P)图像顺时针旋转90度
+JNIEXPORT void JNICALL Java_com_example_apadmin_cameraphoto_YuvOperateJni_I420ClockWiseRotate90
+        (JNIEnv *env, jclass jcls __unused, jlong jcPtr, jbyteArray jsrcI420, jint jsrcWidth, jint jsrcHeight, jbyteArray joutData, jintArray joutWidth, jintArray joutHeight)
+{
+    jbyte* jsrcI420Byte = env->GetByteArrayElements(jsrcI420, NULL);
+    jbyte* joutDataByte = env->GetByteArrayElements(joutData, NULL);
+
+    jint* joutWidthInt = env->GetIntArrayElements(joutWidth, NULL);
+    jint* joutHeightInt = env->GetIntArrayElements(joutHeight, NULL);
+
+    int* poutWidth = (int*)joutWidthInt;
+    int* poutHeight = (int*)joutHeightInt;
+
+    unsigned char* pSrcI420 = (unsigned char*)jsrcI420Byte;
+    unsigned char* pOutData = (unsigned char*)joutDataByte;
+
+    WaterMark* pYuvWater = reinterpret_cast<WaterMark*> (jcPtr);
+    pYuvWater->I420ClockWiseRotate90(pSrcI420,(int)jsrcWidth,(int)jsrcHeight,pOutData,poutWidth, poutHeight);
+
+    LOGD("%s: outWidth: %d,outHeight:%d",__FUNCTION__,*poutWidth,*poutHeight);
+    env->ReleaseIntArrayElements(joutWidth, joutWidthInt, 0);
+    env->ReleaseIntArrayElements(joutHeight, joutHeightInt, 0);
+    env->ReleaseByteArrayElements(jsrcI420, jsrcI420Byte, 0);
+    env->ReleaseByteArrayElements(joutData, joutDataByte, 0);
+}
+
+JNIEXPORT void JNICALL Java_com_example_apadmin_cameraphoto_YuvOperateJni_Nv12ClockWiseRotate90
+        (JNIEnv *env, jclass jcls __unused, jlong jcPtr, jbyteArray jsrcNv12, jint jsrcWidth, jint jsrcHeight, jbyteArray joutData, jintArray joutWidth, jintArray joutHeight)
+{
+    jbyte* jsrcNv12Byte = env->GetByteArrayElements(jsrcNv12, NULL);
+    jbyte* joutDataByte = env->GetByteArrayElements(joutData, NULL);
+
+    jint* joutWidthInt = env->GetIntArrayElements(joutWidth, NULL);
+    jint* joutHeightInt = env->GetIntArrayElements(joutHeight, NULL);
+
+    int* poutWidth = (int*)joutWidthInt;
+    int* poutHeight = (int*)joutHeightInt;
+
+    unsigned char* pSrcNv12 = (unsigned char*)jsrcNv12Byte;
+    unsigned char* pOutData = (unsigned char*)joutDataByte;
+
+    WaterMark* pYuvWater = reinterpret_cast<WaterMark*> (jcPtr);
+    pYuvWater->Nv12ClockWiseRotate90(pSrcNv12,(int)jsrcWidth,(int)jsrcHeight,pOutData,poutWidth, poutHeight);
+
+    LOGD("%s: outWidth: %d,outHeight:%d",__FUNCTION__,*poutWidth,*poutHeight);
+    env->ReleaseIntArrayElements(joutWidth, joutWidthInt, 0);
+    env->ReleaseIntArrayElements(joutHeight, joutHeightInt, 0);
+    env->ReleaseByteArrayElements(jsrcNv12, jsrcNv12Byte, 0);
+    env->ReleaseByteArrayElements(joutData, joutDataByte, 0);
+}
+
+//Yv12图像顺时针旋转90度
+JNIEXPORT void JNICALL Java_com_example_apadmin_cameraphoto_YuvOperateJni_Yv12ClockWiseRotate90
+        (JNIEnv *env, jclass jcls __unused, jlong jcPtr, jbyteArray jsrcYv12, jint jsrcWidth, jint jsrcHeight, jbyteArray joutData, jintArray joutWidth, jintArray joutHeight)
+{
+    jbyte* jsrcYv12Byte = env->GetByteArrayElements(jsrcYv12, NULL);
+    jbyte* joutDataByte = env->GetByteArrayElements(joutData, NULL);
+
+    jint* joutWidthInt = env->GetIntArrayElements(joutWidth, NULL);
+    jint* joutHeightInt = env->GetIntArrayElements(joutHeight, NULL);
+
+    int* poutWidth = (int*)joutWidthInt;
+    int* poutHeight = (int*)joutHeightInt;
+
+    unsigned char* pSrcYv12 = (unsigned char*)jsrcYv12Byte;
+    unsigned char* pOutData = (unsigned char*)joutDataByte;
+
+    WaterMark* pYuvWater = reinterpret_cast<WaterMark*> (jcPtr);
+    pYuvWater->Yv12ClockWiseRotate90(pSrcYv12,(int)jsrcWidth,(int)jsrcHeight,pOutData,poutWidth, poutHeight);
+
+    LOGD("%s: outWidth: %d,outHeight:%d",__FUNCTION__,*poutWidth,*poutHeight);
+    env->ReleaseIntArrayElements(joutWidth, joutWidthInt, 0);
+    env->ReleaseIntArrayElements(joutHeight, joutHeightInt, 0);
+    env->ReleaseByteArrayElements(jsrcYv12, jsrcYv12Byte, 0);
     env->ReleaseByteArrayElements(joutData, joutDataByte, 0);
 }
 

@@ -122,6 +122,58 @@ void WaterMark::I420ToNv21(unsigned char* pI420,unsigned char* pNv21,int width,i
     }
 }
 
+//NV21 -> Yv12
+void WaterMark::Nv21ToYv12(unsigned char* pNv21,unsigned char* pYv12,int width,int height)
+{
+    if(pNv21 == NULL || pYv12 == NULL){
+        LOGE("%s: pNv21 is null or pYv12 is null",__FUNCTION__);
+        return;
+    }
+
+    int frameSize = width * height;
+    if(frameSize <= 0){
+        LOGE("%s: frameSize <= 0",__FUNCTION__);
+        return;
+    }
+
+    int i = 0;
+    //拷贝Y分量
+    memcpy(pYv12,pNv21,frameSize);
+
+    for (i = 0; i < frameSize / 2; i += 2) {
+        //V分量
+        pYv12[frameSize + i/2] = pNv21[frameSize + i];//pNv21[frameSize + i + 1];
+        //U分量
+        pYv12[frameSize + i/2 + frameSize / 4] = pNv21[frameSize + i + 1];
+    }
+}
+
+//YV12 -> NV21
+void WaterMark::Yv12ToNv21(unsigned char* pYv12,unsigned char* pNv21,int width,int height)
+{
+    if(pYv12 == NULL || pNv21 == NULL){
+        LOGE("%s: pYv12 is null or pNv21 is null",__FUNCTION__);
+        return;
+    }
+
+    int frameSize = width * height;
+    if(frameSize <= 0){
+        LOGE("%s: frameSize <= 0",__FUNCTION__);
+        return;
+    }
+
+    int i = 0;
+    //拷贝Y分量
+    memcpy(pNv21,pYv12,frameSize);
+
+    for (i = 0; i < frameSize / 2; i += 2) {
+        //V分量
+        pNv21[frameSize + i] = pYv12[frameSize + i/2];
+        //U分量
+        pNv21[frameSize + i + 1] = pYv12[frameSize + frameSize/4 + i/2];
+    }
+}
+
 //NV21 -> NV12
 void WaterMark::Nv21ToNv12(unsigned char* pNv21,unsigned char* pNv12,int width,int height)
 {
@@ -601,5 +653,120 @@ void WaterMark::Nv21ClockWiseRotate270(unsigned char* pNv21,int srcWidth,int src
     *outHeight = srcWidth;
 }
 
+void WaterMark::I420ClockWiseRotate90(unsigned char* pI420,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight)
+{
+    if(pI420 == NULL || outData == NULL){
+        LOGE("%s: pI420 is null or outData is null",__FUNCTION__);
+        return;
+    }
+
+    int nPos = 0;
+    //旋转Y
+    int k = 0;
+    for(int i=0;i<srcWidth;i++)
+    {
+        for(int j = srcHeight -1;j >=0;j--)
+        {
+            outData[k++] = pI420[j*srcWidth + i];
+        }
+    }
+    //旋转U
+    nPos = srcWidth*srcHeight;
+    for(int i=0;i<srcWidth/2;i++)
+    {
+        for(int j= srcHeight/2-1;j>=0;j--)
+        {
+            outData[k++] = pI420[nPos+ j*srcWidth/2 +i];
+        }
+    }
+
+    //旋转V
+    nPos = srcWidth*srcHeight*5/4;
+    for(int i=0;i<srcWidth/2;i++)
+    {
+        for(int j= srcHeight/2-1;j>=0;j--)
+        {
+            outData[k++] = pI420[nPos+ j*srcWidth/2 +i];
+        }
+    }
+
+    *outWidth = srcHeight;
+    *outHeight = srcWidth;
+    LOGD("%s: outWidth: %d,outHeight:%d",__FUNCTION__,*outWidth,*outHeight);
+}
+
+void WaterMark::Nv12ClockWiseRotate90(unsigned char* pNv12,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight)
+{
+    if(pNv12 == NULL || outData == NULL){
+        LOGE("%s: pNv12 is null or outData is null",__FUNCTION__);
+        return;
+    }
+
+    // Rotate the Y luma
+    int i =0;
+    for(int x =0;x < srcWidth;x++){
+        for(int y = srcHeight-1;y >=0;y--){
+            outData[i]= pNv12[y*srcWidth+x];
+            i++;
+        }
+    }
+
+    // Rotate the U and V color components
+    i = srcWidth*srcHeight*3/2-1;
+    for(int x = srcWidth-1;x >0;x=x-2){
+        for(int y =0;y < srcHeight/2;y++){
+            outData[i]= pNv12[(srcWidth*srcHeight)+(y*srcWidth)+x];
+            i--;
+            outData[i]= pNv12[(srcWidth*srcHeight)+(y*srcWidth)+(x-1)];
+            i--;
+        }
+    }
+
+    *outWidth = srcHeight;
+    *outHeight = srcWidth;
+    LOGD("%s: outWidth: %d,outHeight:%d",__FUNCTION__,*outWidth,*outHeight);
+}
+
+void WaterMark::Yv12ClockWiseRotate90(unsigned char* pYv12,int srcWidth,int srcHeight, unsigned char* outData,int* outWidth,int* outHeight)
+{
+    if(pYv12 == NULL || outData == NULL){
+        LOGE("%s: pYv12 is null or outData is null",__FUNCTION__);
+        return;
+    }
+
+    int nPos = 0;
+    //旋转Y
+    int k = 0;
+    for(int i=0;i<srcWidth;i++)
+    {
+        for(int j = srcHeight -1;j >=0;j--)
+        {
+            outData[k++] = pYv12[j*srcWidth + i];
+        }
+    }
+    //旋转V
+    nPos = srcWidth*srcHeight;
+    for(int i=0;i<srcWidth/2;i++)
+    {
+        for(int j= srcHeight/2-1;j>=0;j--)
+        {
+            outData[k++] = pYv12[nPos+ j*srcWidth/2 +i];
+        }
+    }
+
+    //旋转U
+    nPos = srcWidth*srcHeight*5/4;
+    for(int i=0;i<srcWidth/2;i++)
+    {
+        for(int j= srcHeight/2-1;j>=0;j--)
+        {
+            outData[k++] = pYv12[nPos+ j*srcWidth/2 +i];
+        }
+    }
+
+    *outWidth = srcHeight;
+    *outHeight = srcWidth;
+    LOGD("%s: outWidth: %d,outHeight:%d",__FUNCTION__,*outWidth,*outHeight);
+}
 
 
