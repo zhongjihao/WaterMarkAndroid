@@ -1,10 +1,10 @@
 # WaterMarkAndroid
-Android平台基于freetype和opencv实现视频中文水印
+Android平台Camera基于freetype和opencv实现预览拍照支持中文水印
 
 本工程包括如下部分
 
 一 主工程
-     Camera采集数据,拍照支持时间水印,位置水印,以及机型水印等 \
+     Camera采集数据,预览和拍照支持显示时间水印,位置水印,以及机型水印等 \
      集成百度地图获取具体位置信息
 
 二 freetype子工程, 实现中文水印 \

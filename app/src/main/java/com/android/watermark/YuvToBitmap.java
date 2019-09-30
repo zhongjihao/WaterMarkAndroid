@@ -71,7 +71,7 @@ public class YuvToBitmap {
     }
 
     /**
-     * 给图片添加水印和时间戳
+     * 给图片添加水印
      *
      * @param originBitmap 原始图片
      * @param degree 旋转角度
@@ -79,7 +79,7 @@ public class YuvToBitmap {
      * @param paint 绘制水印的画笔对象
      * @return 最终处理的结果
      */
-    public static Bitmap rotateBitmapAndWaterMark(Bitmap originBitmap, int degree, String watermark, Paint paint) {
+    public static Bitmap createWaterMarkBitmap(Bitmap originBitmap, int degree, String watermark, Paint paint) {
         int width = originBitmap.getWidth();
         int height = originBitmap.getHeight();
         Bitmap resultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
