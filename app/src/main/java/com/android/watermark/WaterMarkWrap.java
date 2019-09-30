@@ -2,7 +2,8 @@ package com.android.watermark;
 
 
 /**
- * Created by zhongjihao on 18-4-25.
+ * Created by zhongjihao100@163.com on 18-4-25.
+ * weixin: 18626455927
  */
 public class WaterMarkWrap {
     private long cPtr;

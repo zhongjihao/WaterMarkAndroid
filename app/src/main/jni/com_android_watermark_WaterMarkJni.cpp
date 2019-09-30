@@ -1,5 +1,6 @@
 //
-// Created by zhongjihao on 19-8-26.
+// Created by zhongjihao100@163.com on 19-8-26.
+// weixin: 18626455927
 //
 
 #include "com_android_watermark_WaterMarkJni.h"

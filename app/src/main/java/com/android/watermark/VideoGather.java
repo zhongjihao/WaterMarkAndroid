@@ -7,14 +7,11 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
-import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -30,6 +27,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -37,7 +36,8 @@ import static android.hardware.Camera.Parameters.PREVIEW_FPS_MAX_INDEX;
 import static android.hardware.Camera.Parameters.PREVIEW_FPS_MIN_INDEX;
 
 /**
- * Created by zhongjihao on 18-2-7.
+ * Created by zhongjihao100@163.com on 18-2-7.
+ * weixin: 18626455927
  */
 
 
@@ -71,10 +71,15 @@ public class VideoGather implements LocationManager.ILocationListen{
             }).build();
 
     private WaterMark.WaterMarkInfo mWaterMarkInfo = null;
-    private HandlerThread mHandlerThread;
-    private Handler mHandler;
+//    private HandlerThread mHandlerThread;
+//    private Handler mHandler;
     private String mAddress = null;
     private final static int MSG_WATER_MAKR = 1;
+    private SurfaceView mWaterMarkView;
+    private YuvToBitmap nv21ToBitmap;
+    private ExecutorService mSyncEs = Executors.newSingleThreadExecutor(new NameThreadFactory("waterMarkTask"));
+
+
 
     private VideoGather() {
         Log.d(TAG,"VideoGather()");
@@ -95,6 +100,10 @@ public class VideoGather implements LocationManager.ILocationListen{
         return mCameraWrapper;
     }
 
+    public void setWaterMarkView(SurfaceView surfaceView) {
+        mWaterMarkView = surfaceView;
+    }
+
     public void doOpenCamera(CameraOperateCallback callback) {
         Log.d(TAG, "====zhongjihao====Camera open....");
         cameraCb = callback;
@@ -109,10 +118,11 @@ public class VideoGather implements LocationManager.ILocationListen{
         }
         LocationManager.getInstance().registerLocationListen(this);
         mWaterMarkInfo = new WaterMark.WaterMarkInfo();
-        mHandlerThread = new HandlerThread( "WaterMarkthread");
+        nv21ToBitmap = new YuvToBitmap(Factory.get().getApplicationContext());
         //开启一个线程
-        mHandlerThread.start();
-        mHandler = new Handler(mHandlerThread.getLooper(),mCallback);
+//        mHandlerThread = new HandlerThread( "WaterMarkthread");
+//        mHandlerThread.start();
+//        mHandler = new Handler(mHandlerThread.getLooper(),mCallback);
         Log.d(TAG, "====zhongjihao=====Camera open over....");
         cameraCb.cameraHasOpened();
     }
@@ -165,10 +175,12 @@ public class VideoGather implements LocationManager.ILocationListen{
             mCamera = null;
         }
         mContext = null;
-        if(mHandlerThread != null){
-            mHandlerThread.quitSafely();
-            mHandlerThread = null;
-        }
+//        if(mHandlerThread != null){
+//            mHandlerThread.quitSafely();
+//            mHandlerThread = null;
+//        }
+        mSyncEs.shutdownNow();
+        nv21ToBitmap.free();
     }
 
     private void setCameraParamter(SurfaceHolder surfaceHolder) {
@@ -222,6 +234,12 @@ public class VideoGather implements LocationManager.ILocationListen{
             mCameraParamters.setPreviewFpsRange(defminFps,defmaxFps);
             frameRate = defmaxFps / 1000;
             surfaceHolder.setFixedSize(previewSize.width, previewSize.height);
+
+            // 加了水印的预览窗口也需要改变大小
+            if (mWaterMarkView != null) {
+                mWaterMarkView.getHolder().setFixedSize(previewSize.height,previewSize.width);
+            }
+
             mCameraPreviewCallback = new CameraPreviewCallback();
             mCamera.addCallbackBuffer(new byte[previewSize.width * previewSize.height*3/2]);
             mCamera.setPreviewCallbackWithBuffer(mCameraPreviewCallback);
@@ -338,7 +356,7 @@ public class VideoGather implements LocationManager.ILocationListen{
         }
     }
 
-    private static class Frame{
+    public static class Frame{
         byte[] nv21;
         int width;
         int height;
@@ -375,9 +393,12 @@ public class VideoGather implements LocationManager.ILocationListen{
             //通过回调,拿到的data数据是原始数据
             if(data != null){
                 if(!mIsCaptrue.get()){
-                    Message message = mHandler.obtainMessage(MSG_WATER_MAKR);
-                    message.obj = new Frame(data,size.width,size.height);
-                    mHandler.sendMessageDelayed(message, 1000);
+                    try {
+                        mSyncEs.execute(new WaterMarkTask(size,data,mWaterMarkInfo,mAddress,mDataCaches,nv21ToBitmap,mWaterMarkView));
+                    }catch (Exception e){
+                        Log.e(TAG, "draw watermark exception", e);
+                        e.printStackTrace();
+                    }
                 }
                 camera.addCallbackBuffer(data);
             }
@@ -392,38 +413,18 @@ public class VideoGather implements LocationManager.ILocationListen{
         mAddress = addr;
     }
 
-    private Handler.Callback mCallback = new Handler.Callback() {
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_WATER_MAKR:{
-                    if (mHandler.hasMessages(MSG_WATER_MAKR)){
-                        mHandler.removeMessages(MSG_WATER_MAKR);
-                    }
-
-                    if (mWaterMarkInfo != null) {
-                        try {
-                            mWaterMarkInfo.onTimeChanged(TimeUtil.getCurrentTime(TimeUtil.TIME_FORMAT_WATERMARK_DISPLAY));
-                            mWaterMarkInfo.onLocationChanged(mAddress);
-
-                            Frame frame = (Frame) msg.obj;
-                            Log.d(TAG,"width: "+frame.width+"  height: "+frame.height);
-                            byte[] yuv = new byte[frame.width * frame.height *3/2];
-                            int[] outWidth = new int[1];
-                            int[] outHeight = new int[1];
-                            WaterMarkWrap.newInstance().Nv21ClockWiseRotate90(frame.nv21, frame.width, frame.height, yuv, outWidth, outHeight);
-                            mWaterMarkInfo.drawWaterMark(yuv, outWidth[0], outHeight[0]);
-                            Log.d(TAG, "waterMark--->outWidth: " + outWidth[0] + " ,outHeight: " + outHeight[0]);
-                            mDataCaches.put(SystemClock.elapsedRealtime(),new Frame(yuv,outWidth[0],outHeight[0]));
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            Log.e(TAG, "draw watermark exception", ex);
-                        }
-                    }
-                    break;
-                }
-            }
-            return true;
-        }
-    };
+//    private Handler.Callback mCallback = new Handler.Callback() {
+//        public boolean handleMessage(Message msg) {
+//            switch (msg.what) {
+//                case MSG_WATER_MAKR:{
+//                    if (mHandler.hasMessages(MSG_WATER_MAKR)){
+//                        mHandler.removeMessages(MSG_WATER_MAKR);
+//                    }
+//                    break;
+//                }
+//            }
+//            return true;
+//        }
+//    };
 
 }

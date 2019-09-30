@@ -16,6 +16,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 /**
  * Created by zhongjihao on 19-9-25.
+ * weixin: 18626455927
  */
 public class WaterMarkApplication extends Application implements UncaughtExceptionHandler{
     private static final String TAG = "WaterMarkApplication";

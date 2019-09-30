@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 
 /**
  * Created by zhongjihao on 19-9-14.
+ * weixin: 18626455927
  */
 public class WaterMark {
     private static final String TAG = "WaterMark";
