@@ -1,3 +1,9 @@
+如果您觉得该项目对您有用，请扫描以下二维码打赏1元，多多支持 \
+![afd](webwxgetmsgimg.jpeg)
+
+
+
+
 # WaterMarkAndroid
 Android平台Camera基于freetype和opencv实现预览拍照支持中文水印
 
